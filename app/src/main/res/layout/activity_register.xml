@@ -10,24 +10,26 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:background="@color/grayLight">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:background="@color/colorAccent">
+            android:background="@drawable/gradientbackground"
+            android:orientation="vertical">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="회원가입"
-                android:textStyle="bold"
-                android:textColor="#FFFFFF"
-                android:textSize="30dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="10dp"
-                />
+                android:fontFamily="@font/comic"
+                android:text="회원가입"
+                android:textColor="#FFFFFF"
+                android:textSize="30dp"
+                android:textStyle="bold" />
 
         </LinearLayout>
         <LinearLayout
@@ -40,29 +42,33 @@
                 android:orientation="horizontal"
                 android:layout_marginTop="50dp"
                 android:layout_gravity="center">
+
                 <EditText
                     android:id="@+id/idText"
                     android:layout_width="190dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginRight="10dp"
-                    android:background="@color/colorAccent"
+                    android:background="@drawable/gradientbackground"
                     android:drawableStart="@drawable/login_ic_person_black_24dp"
                     android:drawableLeft="@drawable/login_ic_person_black_24dp"
+                    android:fontFamily="@font/comic"
                     android:hint="아이디"
                     android:padding="10dp"
-                    android:textColor="#FFFFFF"
-                    android:textColorHint="#FFFFFF" />
+                    android:textColor="#fafafa"
+                    android:textColorHint="#fafafa" />
+
                 <Button
+                    android:id="@+id/validateButton"
                     android:layout_width="80dp"
                     android:layout_height="40dp"
-                    android:textSize="15dp"
-                    android:textStyle="bold"
-                    android:background="@color/colorWarning"
-                    android:text="중복체크"
                     android:layout_gravity="center"
-                    android:id="@+id/validateButton"
-                    android:textColor="#FFFFFF"/>
+                    android:background="@color/colorWarning"
+                    android:fontFamily="@font/comic"
+                    android:text="중복체크"
+                    android:textColor="#fafafa"
+                    android:textSize="15dp"
+                    android:textStyle="bold" />
             </LinearLayout>
 
 
@@ -73,27 +79,30 @@
 
                 android:layout_gravity="center"
                 android:layout_marginTop="10dp"
-                android:background="@color/colorAccent"
+                android:background="@drawable/gradientbackground"
                 android:drawableStart="@drawable/ic_https_black_24dp"
                 android:drawableLeft="@drawable/ic_https_black_24dp"
+                android:fontFamily="@font/comic"
                 android:hint="비밀번호"
                 android:inputType="textPassword"
                 android:padding="10dp"
-                android:textColor="#FFFFFF"
-                android:textColorHint="#FFFFFF" />
+                android:textColor="#fafafa"
+                android:textColorHint="#fafafa" />
+
             <EditText
                 android:id="@+id/emailText"
                 android:layout_width="280dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="10dp"
-                android:background="@color/colorAccent"
-                android:drawableStart="@drawable/ic_email_black_24dp"
-                android:drawableLeft="@drawable/ic_email_black_24dp"
+                android:background="@drawable/gradientbackground"
+                android:drawableStart="@drawable/login_ic_email_black_24dp"
+                android:drawableLeft="@drawable/login_ic_email_black_24dp"
+                android:fontFamily="@font/comic"
                 android:hint="이메일"
                 android:padding="10dp"
-                android:textColor="#FFFFFF"
-                android:textColorHint="#FFFFFF" />
+                android:textColor="#fafafa"
+                android:textColorHint="#fafafa" />
             <RadioGroup
                 android:layout_width="280dp"
                 android:layout_height="wrap_content"
@@ -101,33 +110,37 @@
                 android:layout_gravity="center_horizontal"
                 android:orientation="horizontal"
                 android:layout_marginTop="10dp">
+
                 <RadioButton
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:text ="여성"
                     android:id="@+id/genderWoman"
-                    android:layout_weight="1"
-                    android:checked="true"/>
-                <RadioButton
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text ="남성"
-                    android:id="@+id/genderMan"
                     android:layout_weight="1"
-                    />
+                    android:checked="true"
+                    android:fontFamily="@font/comic"
+                    android:text="여성" />
+
+                <RadioButton
+                    android:id="@+id/genderMan"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/comic"
+                    android:text="남성" />
             </RadioGroup>
 
             <Button
+                android:id="@+id/registerButton"
                 android:layout_width="280dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="10dp"
-                android:background="@color/colorAccent"
+                android:background="@drawable/gradientbackground"
+                android:fontFamily="@font/comic"
                 android:text="가입하기"
-                android:textColor="#ffffff"
+                android:textColor="#fafafa"
                 android:textSize="20dp"
-                android:textStyle="bold"
-                android:id="@+id/registerButton"/>
+                android:textStyle="bold" />
 
 
         </LinearLayout>

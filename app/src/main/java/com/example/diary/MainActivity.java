@@ -6,6 +6,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.CardView;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -20,11 +21,12 @@ public class MainActivity extends AppCompatActivity {
         final Button meButton = (Button) findViewById(R.id.meButton);
         final Button diaryButton = (Button) findViewById(R.id.diaryButton);
         final Button friendButton = (Button) findViewById(R.id.friendButton);
+        final CardView card1 = (CardView) findViewById(R.id.card1);
 
         meButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                meButton.setBackgroundColor(getResources().getColor(R.color.colorWarning));
+                card1.setBackgroundColor(getResources().getColor(R.color.colorGray));
                 Intent meButtonintent = new Intent(MainActivity.this, MeActivity.class);
                 MainActivity.this.startActivity(meButtonintent);
             }

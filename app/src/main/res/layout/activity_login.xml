@@ -99,6 +99,20 @@
                 android:text="회원가입"
                 android:textSize="18dp" />
 
+            <LinearLayout
+                android:id="@+id/buttonOAuthLoginImg"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="50dp"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <com.nhn.android.naverlogin.ui.view.OAuthLoginButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="50dp" />
+            </LinearLayout>
+
+
         </LinearLayout>
 
     </LinearLayout>

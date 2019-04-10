@@ -31,6 +31,14 @@ public class MainActivity extends AppCompatActivity {
                 MainActivity.this.startActivity(meButtonintent);
             }
         });
+        diaryButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent diaryButtonintent = new Intent(MainActivity.this, MapsActivity.class);
+                MainActivity.this.startActivity(diaryButtonintent);
+
+            }
+        });
 
 
     }

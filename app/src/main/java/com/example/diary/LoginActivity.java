@@ -117,6 +117,9 @@ public class LoginActivity extends AppCompatActivity {
                 queue.add(loginRequest);
             }
         });
+        //if(mOAuthLoginInstance.getAccessToken(LoginActivity.this) != null) {
+            //startActivity(new Intent(LoginActivity.this, MainActivity.class));
+       // }
     }
 
     @Override
@@ -214,6 +217,8 @@ public class LoginActivity extends AppCompatActivity {
                 mOauthExpires.setText(String.valueOf(expiresAt));
                 mOauthTokenType.setText(tokenType);
                 mOAuthState.setText(mOAuthLoginInstance.getState(mContext).toString());
+
+
             } else {
                 String errorCode = mOAuthLoginInstance.getLastErrorCode(mContext).getCode();
                 String errorDesc = mOAuthLoginInstance.getLastErrorDesc(mContext);

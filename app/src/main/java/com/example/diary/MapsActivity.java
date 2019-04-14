@@ -1,5 +1,24 @@
 package com.example.diary;
 
+import android.graphics.Color;
+import android.os.Bundle;
+
+import java.util.ArrayList;
+
+import android.graphics.Color;
+import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
+
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
+import com.google.android.gms.maps.GoogleMap.OnMapLongClickListener;
+import com.google.android.gms.maps.MapsInitializer;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
 
 
 import android.Manifest;
@@ -17,11 +36,19 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
+
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
+
+
+
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -30,14 +57,14 @@ import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.maps.CameraUpdate;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
+
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.LatLng;
+
 import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
+
+
 
 import java.io.IOException;
 import java.util.List;
@@ -51,6 +78,8 @@ public class MapsActivity extends AppCompatActivity
 
     private GoogleMap mGoogleMap = null;
     private Marker currentMarker = null;
+    private PolylineOptions polylineOptions;
+    private ArrayList<LatLng> arrayPoints;
 
     private static final String TAG = "googlemap_example";
     private static final int GPS_ENABLE_REQUEST_CODE = 2001;
@@ -70,6 +99,10 @@ public class MapsActivity extends AppCompatActivity
     Location mCurrentLocatiion;
     LatLng currentPosition;
 
+    private void init() {
+
+        arrayPoints = new ArrayList<LatLng>();
+    }
 
     private FusedLocationProviderClient mFusedLocationClient;
     private LocationRequest locationRequest;
@@ -87,6 +120,10 @@ public class MapsActivity extends AppCompatActivity
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
                 WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_maps);
+
+
+        MapsInitializer.initialize(getApplicationContext());
+
 
         mLayout = findViewById(R.id.layout_maps);
 
@@ -112,6 +149,9 @@ public class MapsActivity extends AppCompatActivity
         MapFragment mapFragment = (MapFragment) getFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+
+        this.init();
     }
 
 
@@ -196,6 +236,7 @@ public class MapsActivity extends AppCompatActivity
         mGoogleMap = googleMap;
 
 
+
         //런타임 퍼미션 요청 대화상자나 GPS 활성 요청 대화상자 보이기전에
         //지도의 초기위치를 서울로 이동
         setDefaultLocation();
@@ -253,19 +294,39 @@ public class MapsActivity extends AppCompatActivity
 
         mGoogleMap.getUiSettings().setMyLocationButtonEnabled(true);
         mGoogleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
-        mGoogleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
 
-            @Override
-            public void onMapClick(LatLng latLng) {
 
-                Log.d( TAG, "onMapClick :");
-            }
-        });
 
         mGoogleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener(){
             @Override
-            public void onMapClick(LatLng point) {
-                MarkerOptions mOptions = new MarkerOptions();
+            public void onMapClick(LatLng latLng) {
+                //add marker
+                MarkerOptions marker=new MarkerOptions();
+                marker.position(latLng);
+                mGoogleMap.addMarker(marker);
+
+                polylineOptions = new PolylineOptions();
+                polylineOptions.color(Color.RED);
+                polylineOptions.width(5);
+                arrayPoints.add(latLng);
+                polylineOptions.addAll(arrayPoints);
+                mGoogleMap.addPolyline(polylineOptions);
+
+
+
+
+
+
+                // 맵셋팅
+               /* polylineOptions = new PolylineOptions();
+                polylineOptions.color(Color.RED);
+                polylineOptions.width(5);
+                arrayPoints.add(latlng);
+                polylineOptions.addAll(arrayPoints);
+                mGoogleMap.addPolyline(polylineOptions);*/
+
+
+                /*MarkerOptions mOptions = new MarkerOptions();
                 // 마커 타이틀
                 mOptions.title("마커 좌표");
                 Double latitude = point.latitude; // 위도
@@ -275,15 +336,14 @@ public class MapsActivity extends AppCompatActivity
                 // LatLng: 위도 경도 쌍을 나타냄
                 mOptions.position(new LatLng(latitude, longitude));
                 // 마커(핀) 추가
-                googleMap.addMarker(mOptions);
+                googleMap.addMarker(mOptions);*/
+
             }
         });
-        ////////////////////
 
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mGoogleMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+
+
+
     }
 
 

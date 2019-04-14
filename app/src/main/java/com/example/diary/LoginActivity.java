@@ -204,7 +204,7 @@ public class LoginActivity extends AppCompatActivity {
     /**
      * startOAuthLoginActivity() 호출시 인자로 넘기거나, OAuthLoginButton 에 등록해주면 인증이 종료되는 걸 알 수 있다.
      */
-    static private OAuthLoginHandler mOAuthLoginHandler = new OAuthLoginHandler() {
+     private OAuthLoginHandler mOAuthLoginHandler = new OAuthLoginHandler() {
         @Override
         public void run(boolean success) {
             if (success) {
@@ -212,11 +212,17 @@ public class LoginActivity extends AppCompatActivity {
                 String refreshToken = mOAuthLoginInstance.getRefreshToken(mContext);
                 long expiresAt = mOAuthLoginInstance.getExpiresAt(mContext);
                 String tokenType = mOAuthLoginInstance.getTokenType(mContext);
+
+                /*
                 mOauthAT.setText(accessToken);
                 mOauthRT.setText(refreshToken);
                 mOauthExpires.setText(String.valueOf(expiresAt));
                 mOauthTokenType.setText(tokenType);
-                mOAuthState.setText(mOAuthLoginInstance.getState(mContext).toString());
+                mOAuthState.setText(mOAuthLoginInstance.getState(mContext).toString());*/
+
+                new RequestApiTask().execute();
+                Intent a = new Intent(mContext,MainActivity.class);
+                mContext.startActivity(a);
 
 
             } else {

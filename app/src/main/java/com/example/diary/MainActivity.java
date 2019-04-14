@@ -1,6 +1,8 @@
 package com.example.diary;
 
 import android.content.Intent;
+import android.os.Handler;
+import android.support.v7.app.AlertDialog;
 import android.graphics.drawable.Drawable;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -13,6 +15,10 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 
 public class MainActivity extends AppCompatActivity {
+
+    private AlertDialog dialog;
+    private Handler mHandler = new Handler();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,8 +40,22 @@ public class MainActivity extends AppCompatActivity {
         diaryButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent diaryButtonintent = new Intent(MainActivity.this, MapsActivity.class);
-                MainActivity.this.startActivity(diaryButtonintent);
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                dialog = builder.setMessage("카메라 -> 설정 -> 위치태그 허용").setPositiveButton("확인",null).create();
+                dialog.show();
+
+
+                final Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        Intent diaryButtonintent = new Intent(MainActivity.this, MapsActivity.class);
+                        MainActivity.this.startActivity(diaryButtonintent);
+                    }
+                },10000);
+
+
 
             }
         });

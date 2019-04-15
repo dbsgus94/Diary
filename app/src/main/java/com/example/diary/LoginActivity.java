@@ -148,11 +148,14 @@ public class LoginActivity extends AppCompatActivity {
         public void run(boolean b) {
             //로그인 인증성공
             if(b) {
+                Intent intent = new Intent(mContext,MainActivity.class);
+                mContext.startActivity(intent);
                 //사용자 정보 가져오기
                 String accessToken = mOAuthLoginInstance.getAccessToken(mContext);
                 String refreshToken = mOAuthLoginInstance.getRefreshToken(mContext);
                 long expiresAt = mOAuthLoginInstance.getExpiresAt(mContext);
                 String tokenType = mOAuthLoginInstance.getTokenType(mContext);
+
             } else {
                 //로그인 인증 실패
                 String errorCode = mOAuthLoginInstance.getLastErrorCode(mContext).getCode();
@@ -160,8 +163,7 @@ public class LoginActivity extends AppCompatActivity {
                 Toast.makeText(mContext,"errorCode:"+errorCode+", "
                         + "errorDesc:"+errorDesc,Toast.LENGTH_SHORT).show();
             }
-            Intent intent = new Intent(mContext,MainActivity.class);
-            mContext.startActivity(intent);
+
         }
     };
     @Override

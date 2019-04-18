@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
                         Intent diaryButtonintent = new Intent(MainActivity.this, MapsActivity.class);
                         MainActivity.this.startActivity(diaryButtonintent);
                     }
-                },10000);
+                },100);
 
 
 

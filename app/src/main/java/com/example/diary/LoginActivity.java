@@ -115,6 +115,7 @@ public class LoginActivity extends AppCompatActivity {
                                 dialog = builder.setMessage("로그인에 성공했습니다").setPositiveButton("확인",null).create();
                                 dialog.show();
                                 Intent intent = new Intent(LoginActivity.this,MainActivity.class);
+                                intent.putExtra("id_value",userID);
                                 LoginActivity.this.startActivity(intent);
                             }
                             /*

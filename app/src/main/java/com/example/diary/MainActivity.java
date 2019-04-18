@@ -33,7 +33,13 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 card1.setBackgroundColor(getResources().getColor(R.color.colorGray));
+
+                Intent intent=getIntent();
+                String userID = intent.getExtras().getString("id_value");;
+
+
                 Intent meButtonintent = new Intent(MainActivity.this, MeActivity.class);
+                meButtonintent.putExtra("id_value",userID);
                 MainActivity.this.startActivity(meButtonintent);
             }
         });

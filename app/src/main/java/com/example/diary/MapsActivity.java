@@ -73,7 +73,7 @@ import java.util.Map;
 
 public class MapsActivity extends AppCompatActivity
         implements OnMapReadyCallback, ActivityCompat.OnRequestPermissionsResultCallback {
-    public int i =0;
+    public int i = 0;
     private AlertDialog dialog;
     private GoogleMap mGoogleMap = null;
     private Marker currentMarker = null;
@@ -82,8 +82,7 @@ public class MapsActivity extends AppCompatActivity
     private Button btn_timer_start;
     private Button btn_timer_stop;
     public static Context mContext;
-
-
+    private boolean isBtnStart = false;
 
 
     private static final String TAG = "googlemap_example";
@@ -287,56 +286,60 @@ public class MapsActivity extends AppCompatActivity
             }
 
         }
-
-        boolean clk = false;
         mGoogleMap.getUiSettings().setMyLocationButtonEnabled(true);
         mGoogleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
         btn_timer_start = (Button) findViewById(R.id.btn_timer_start);
         btn_timer_stop = (Button) findViewById(R.id.btn_timer_finish);
-        MarkerOptions markerOptions = new MarkerOptions();
 
-        btn_timer_stop.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-               /* markerOptions.visible(false);
-                AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-                dialog = builder.setMessage("오늘은 여기까지").setPositiveButton("확인",null).create();
-                dialog.show();*/
-            }
-        });
         btn_timer_start.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                if (isBtnStart) {
+                    Toast.makeText(mContext, "이미 시작되었습니다", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                isBtnStart = true;
+                Toast.makeText(mContext, "시작되었습니다", Toast.LENGTH_SHORT).show();
                 LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+                MarkerOptions markerOptions = new MarkerOptions();
 
-                         markerOptions.position(currentLatLng);
-                         mGoogleMap.addMarker(markerOptions);
-                         polylineOptions = new PolylineOptions();
-                         polylineOptions.color(Color.RED);
-                         polylineOptions.width(5);
-                         arrayPoints.add(currentLatLng);
-                         polylineOptions.addAll(arrayPoints);
-                         mGoogleMap.addPolyline(polylineOptions);
-                         //markerOptions.visible(true);
-
+                markerOptions.position(currentLatLng);
+                mGoogleMap.addMarker(markerOptions);
+                polylineOptions = new PolylineOptions();
+                polylineOptions.color(Color.RED);
+                polylineOptions.width(5);
+                arrayPoints.add(currentLatLng);
+                polylineOptions.addAll(arrayPoints);
+                mGoogleMap.addPolyline(polylineOptions);
             }
 
         });
+        btn_timer_stop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (isBtnStart) {
+                    Toast.makeText(mContext, "오늘 일정은 여기까지 입니다.", Toast.LENGTH_SHORT).show();
+                    isBtnStart = false;
+                    return;
+                }
+            }
 
+        });
         mGoogleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
                 //add marker
-                MarkerOptions marker = new MarkerOptions();
-                marker.position(latLng);
-                mGoogleMap.addMarker(marker);
-                polylineOptions = new PolylineOptions();
-                polylineOptions.color(Color.RED);
-                polylineOptions.width(5);
-                arrayPoints.add(latLng);
-                polylineOptions.addAll(arrayPoints);
-                mGoogleMap.addPolyline(polylineOptions);
+                if(isBtnStart) {
+                    MarkerOptions marker = new MarkerOptions();
+                    marker.position(latLng);
+                    mGoogleMap.addMarker(marker);
+                    polylineOptions = new PolylineOptions();
+                    polylineOptions.color(Color.RED);
+                    polylineOptions.width(5);
+                    arrayPoints.add(latLng);
+                    polylineOptions.addAll(arrayPoints);
+                    mGoogleMap.addPolyline(polylineOptions);
+                }
             }
         });
 

@@ -77,10 +77,12 @@ public class MapsActivity extends AppCompatActivity
     private AlertDialog dialog;
     private GoogleMap mGoogleMap = null;
     private Marker currentMarker = null;
+    private Marker marker1;
     private PolylineOptions polylineOptions;
     private ArrayList<LatLng> arrayPoints;
     private Button btn_timer_start;
     private Button btn_timer_stop;
+    private Button btn_timer_reset;
     public static Context mContext;
     private boolean isBtnStart = false;
 
@@ -288,12 +290,17 @@ public class MapsActivity extends AppCompatActivity
         }
         mGoogleMap.getUiSettings().setMyLocationButtonEnabled(true);
         mGoogleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+
         btn_timer_start = (Button) findViewById(R.id.btn_timer_start);
         btn_timer_stop = (Button) findViewById(R.id.btn_timer_finish);
+        btn_timer_reset = (Button) findViewById(R.id.btn_timer_reset);
 
+        MarkerOptions markerOptions = new MarkerOptions();
+        polylineOptions = new PolylineOptions();
         btn_timer_start.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                btn_timer_start.setBackgroundColor(getResources().getColor(R.color.colorGray));
                 if (isBtnStart) {
                     Toast.makeText(mContext, "이미 시작되었습니다", Toast.LENGTH_SHORT).show();
                     return;
@@ -301,11 +308,9 @@ public class MapsActivity extends AppCompatActivity
                 isBtnStart = true;
                 Toast.makeText(mContext, "시작되었습니다", Toast.LENGTH_SHORT).show();
                 LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
-                MarkerOptions markerOptions = new MarkerOptions();
 
                 markerOptions.position(currentLatLng);
-                mGoogleMap.addMarker(markerOptions);
-                polylineOptions = new PolylineOptions();
+                currentMarker=mGoogleMap.addMarker(markerOptions);
                 polylineOptions.color(Color.RED);
                 polylineOptions.width(5);
                 arrayPoints.add(currentLatLng);
@@ -317,6 +322,7 @@ public class MapsActivity extends AppCompatActivity
         btn_timer_stop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                btn_timer_stop.setBackgroundColor(getResources().getColor(R.color.colorGray));
                 if (isBtnStart) {
                     Toast.makeText(mContext, "오늘 일정은 여기까지 입니다.", Toast.LENGTH_SHORT).show();
                     isBtnStart = false;
@@ -325,11 +331,19 @@ public class MapsActivity extends AppCompatActivity
             }
 
         });
+
+        btn_timer_reset.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                btn_timer_reset.setBackgroundColor(getResources().getColor(R.color.colorGray));
+                mGoogleMap.clear();
+            }
+        });
+
         mGoogleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
-                //add marker
-                if(isBtnStart) {
+                if(isBtnStart){
                     MarkerOptions marker = new MarkerOptions();
                     marker.position(latLng);
                     mGoogleMap.addMarker(marker);

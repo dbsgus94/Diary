@@ -27,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
         final Button meButton = (Button) findViewById(R.id.meButton);
         final Button diaryButton = (Button) findViewById(R.id.diaryButton);
         final Button friendButton = (Button) findViewById(R.id.friendButton);
+        final Button galleryButton =(Button) findViewById(R.id.galleryButton);
         final CardView card1 = (CardView) findViewById(R.id.card1);
 
         meButton.setOnClickListener(new View.OnClickListener() {
@@ -36,7 +37,6 @@ public class MainActivity extends AppCompatActivity {
 
                 Intent intent=getIntent();
                 String userID = intent.getExtras().getString("id_value");;
-
 
                 Intent meButtonintent = new Intent(MainActivity.this, MeActivity.class);
                 meButtonintent.putExtra("id_value",userID);
@@ -63,6 +63,13 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+            }
+        });
+        galleryButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent galleryButtonIntent = new Intent(MainActivity.this, ImageGridActivity.class);
+                MainActivity.this.startActivity(galleryButtonIntent);
             }
         });
 

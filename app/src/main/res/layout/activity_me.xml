@@ -162,6 +162,7 @@
         </LinearLayout>
     </LinearLayout>
     <Button
+        android:id="@+id/saveButton"
         android:background="@drawable/button_style"
         android:layout_marginTop="50dp"
         android:layout_gravity="center_horizontal"

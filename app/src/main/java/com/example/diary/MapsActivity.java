@@ -19,6 +19,7 @@ import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 
@@ -79,13 +80,17 @@ public class MapsActivity extends AppCompatActivity
     private Marker currentMarker = null;
     private Marker marker1;
     private PolylineOptions polylineOptions;
-    private ArrayList<LatLng> arrayPoints;
+    private Polyline polyline;
+    //private ArrayList<LatLng> arrayPoints;
     private Button btn_timer_start;
     private Button btn_timer_stop;
     private Button btn_timer_reset;
     public static Context mContext;
     private boolean isBtnStart = false;
 
+    private FusedLocationProviderClient mFusedLocationClient;
+    private LocationRequest locationRequest;
+    private Location location;
 
     private static final String TAG = "googlemap_example";
     private static final int GPS_ENABLE_REQUEST_CODE = 2001;
@@ -104,15 +109,13 @@ public class MapsActivity extends AppCompatActivity
 
     Location mCurrentLocatiion;
     LatLng currentPosition;
-
+/*
     private void init() {
 
         arrayPoints = new ArrayList<LatLng>();
     }
+    */
 
-    private FusedLocationProviderClient mFusedLocationClient;
-    private LocationRequest locationRequest;
-    private Location location;
 
 
     private View mLayout;  // Snackbar 사용하기 위해서는 View가 필요합니다.
@@ -158,7 +161,7 @@ public class MapsActivity extends AppCompatActivity
         mapFragment.getMapAsync(this);
 
 
-        this.init();
+        //this.init();
 
 
     }
@@ -307,15 +310,25 @@ public class MapsActivity extends AppCompatActivity
                 }
                 isBtnStart = true;
                 Toast.makeText(mContext, "시작되었습니다", Toast.LENGTH_SHORT).show();
-                LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
 
-                markerOptions.position(currentLatLng);
-                currentMarker=mGoogleMap.addMarker(markerOptions);
+                //LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+                LatLng myLatLng = new LatLng(location.getLatitude(),location.getLongitude());
+
+                //Polyline line = mGoogleMap.addPolyline(new PolylineOptions().add(currentLatLng, myLatLng)
+                        //.width(5).color(Color.BLUE));
+
+                //markerOptions.position(currentLatLng);
+                //currentMarker=mGoogleMap.addMarker(markerOptions);
                 polylineOptions.color(Color.RED);
                 polylineOptions.width(5);
-                arrayPoints.add(currentLatLng);
-                polylineOptions.addAll(arrayPoints);
+                polylineOptions.add(currentPosition,myLatLng);
                 mGoogleMap.addPolyline(polylineOptions);
+
+                //arrayPoints.add(currentLatLng,myLatLng);
+                //polylineOptions.addAll(arrayPoints);
+                //mGoogleMap.addPolyline(polylineOptions);
+
+                currentPosition=myLatLng;
             }
 
         });
@@ -339,7 +352,7 @@ public class MapsActivity extends AppCompatActivity
                 mGoogleMap.clear();
             }
         });
-
+/*
         mGoogleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
@@ -356,6 +369,7 @@ public class MapsActivity extends AppCompatActivity
                 }
             }
         });
+        */
 
 
     }

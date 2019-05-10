@@ -78,7 +78,6 @@ public class MapsActivity extends AppCompatActivity
     private AlertDialog dialog;
     private GoogleMap mGoogleMap = null;
     private Marker currentMarker = null;
-    private Marker marker1;
     private PolylineOptions polylineOptions;
     private Polyline polyline;
     //private ArrayList<LatLng> arrayPoints;
@@ -101,6 +100,8 @@ public class MapsActivity extends AppCompatActivity
     // onRequestPermissionsResult에서 수신된 결과에서 ActivityCompat.requestPermissions를 사용한 퍼미션 요청을 구별하기 위해 사용됩니다.
     private static final int PERMISSIONS_REQUEST_CODE = 100;
     boolean needRequest = false;
+
+    private ArrayList<LatLng> points;
 
 
     // 앱을 실행하기 위해 필요한 퍼미션을 정의합니다.
@@ -126,6 +127,8 @@ public class MapsActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContext = MapsActivity.this;
+
+        points = new ArrayList<LatLng>();
 
 
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
@@ -178,8 +181,7 @@ public class MapsActivity extends AppCompatActivity
                 location = locationList.get(locationList.size() - 1);
                 //location = locationList.get(0);
 
-                currentPosition
-                        = new LatLng(location.getLatitude(), location.getLongitude());
+                currentPosition = new LatLng(location.getLatitude(), location.getLongitude());
 
 
                 String markerTitle = getCurrentAddress(currentPosition);
@@ -299,8 +301,9 @@ public class MapsActivity extends AppCompatActivity
         btn_timer_reset = (Button) findViewById(R.id.btn_timer_reset);
 
         MarkerOptions markerOptions = new MarkerOptions();
-        polylineOptions = new PolylineOptions();
-        btn_timer_start.setOnClickListener(new View.OnClickListener() {
+        PolylineOptions routes = new PolylineOptions().width(5).color(Color.BLUE);
+        polyline= mGoogleMap.addPolyline(routes);
+            btn_timer_start.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 btn_timer_start.setBackgroundColor(getResources().getColor(R.color.colorGray));
@@ -311,24 +314,31 @@ public class MapsActivity extends AppCompatActivity
                 isBtnStart = true;
                 Toast.makeText(mContext, "시작되었습니다", Toast.LENGTH_SHORT).show();
 
-                //LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+                LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
                 LatLng myLatLng = new LatLng(location.getLatitude(),location.getLongitude());
 
-                //Polyline line = mGoogleMap.addPolyline(new PolylineOptions().add(currentLatLng, myLatLng)
-                        //.width(5).color(Color.BLUE));
 
-                //markerOptions.position(currentLatLng);
+                List<LatLng> points = polyline.getPoints();
+                points.add(currentLatLng);
+                polyline.setPoints(points);
+
+
+
+
+
+
                 //currentMarker=mGoogleMap.addMarker(markerOptions);
-                polylineOptions.color(Color.RED);
-                polylineOptions.width(5);
-                polylineOptions.add(currentPosition,myLatLng);
-                mGoogleMap.addPolyline(polylineOptions);
 
+
+                //polylineOptions.color(Color.RED);
+                //polylineOptions.width(5);
+                //polylineOptions.add(currentPosition,myLatLng);
+                //mGoogleMap.addPolyline(polylineOptions);
+                //currentPosition=myLatLng;
                 //arrayPoints.add(currentLatLng,myLatLng);
                 //polylineOptions.addAll(arrayPoints);
                 //mGoogleMap.addPolyline(polylineOptions);
 
-                currentPosition=myLatLng;
             }
 
         });
@@ -455,7 +465,7 @@ public class MapsActivity extends AppCompatActivity
     public void setCurrentLocation(Location location, String markerTitle, String markerSnippet) {
 
 
-        if (currentMarker != null) currentMarker.remove();
+        //if (currentMarker != null) currentMarker.remove();
 
 
         LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());

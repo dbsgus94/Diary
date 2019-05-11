@@ -1,25 +1,33 @@
 package com.example.diary;
 
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.content.Intent;
+import android.view.View;
 import android.widget.ImageView;
 
-public class ImageActivity extends AppCompatActivity {
+import uk.co.senab.photoview.PhotoViewAttacher;
+
+public class ImageActivity extends AppCompatActivity{
+
+
+    ViewPager viewPager;
+    Adapter adapter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_image);
+        setContentView(R.layout.main);
 
-        ImageView imageView = (ImageView)findViewById(R.id.imageView);
-        setImage(imageView);
+        viewPager=(ViewPager)findViewById(R.id.vvv);
+        adapter=new Adapter(this);
+        viewPager.setAdapter(adapter);
+
+
     }
 
-    private void setImage(ImageView imageView) {
-        Intent receivedIntent = getIntent();
-        //에러 요기서 뜸
-        int imageID = (Integer)receivedIntent.getExtras().get("image ID");
-        imageView.setImageResource(imageID);
-    }
+
 }

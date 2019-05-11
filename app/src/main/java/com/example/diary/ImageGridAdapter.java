@@ -2,16 +2,21 @@ package com.example.diary;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.support.v4.view.PagerAdapter;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 public class ImageGridAdapter extends BaseAdapter {
 
     Context context;
 
     int [] imageIDs;
+
 
     public ImageGridAdapter(Context context, int[] imageIDs) {
         this.context = context;
@@ -21,6 +26,7 @@ public class ImageGridAdapter extends BaseAdapter {
         return (null!=imageIDs) ? imageIDs.length:0;
 
     }
+
 
     public Object getItem(int position) {
         return (null != imageIDs) ? imageIDs[position]:0;
@@ -46,4 +52,5 @@ public class ImageGridAdapter extends BaseAdapter {
         }
         return imageView;
     }
+
 }

@@ -2,12 +2,14 @@ package com.example.diary;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.media.ExifInterface;
 import android.os.Bundle;
 
 import java.util.ArrayList;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.app.FragmentActivity;
 
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -72,6 +74,11 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import android.app.Activity;
+import android.media.ExifInterface;
+import android.os.Environment;
+import android.widget.TextView;
+
 public class MapsActivity extends AppCompatActivity
         implements OnMapReadyCallback, ActivityCompat.OnRequestPermissionsResultCallback {
     public int i = 0;
@@ -122,6 +129,8 @@ public class MapsActivity extends AppCompatActivity
     private View mLayout;  // Snackbar 사용하기 위해서는 View가 필요합니다.
     // (참고로 Toast에서는 Context가 필요했습니다.)
 
+    private TextView mView; // %%%%%%%EXIF%%%%%%%
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -166,8 +175,38 @@ public class MapsActivity extends AppCompatActivity
 
         //this.init();
 
+        //%%%%%%%%%%%%%%%%%%%%%%%%%%EXIF%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-    }
+
+        //mView = (TextView) findViewById(R.id.textview);
+         String filename = Environment.getExternalStorageDirectory().getPath() + "/중간고사2.jpg";
+         try {
+          ExifInterface exif = new ExifInterface(filename);
+          showExif(exif);
+         } catch (IOException e) {
+         e.printStackTrace();
+         Toast.makeText(this, "Error!", Toast.LENGTH_LONG).show();
+         }
+           }
+
+           private void showExif(ExifInterface exif) {
+
+            //LatLng myAttribute = new LatLng(getLatlong(),getAltitude());
+               String myAttribute = "[Exif information] \n\n";
+               myAttribute += getTagString(ExifInterface.TAG_DATETIME, exif);//날짜
+               myAttribute += getTagString(ExifInterface.TAG_GPS_LATITUDE,exif); //위도
+               myAttribute += getTagString(ExifInterface.TAG_GPS_LATITUDE_REF, exif);
+               myAttribute += getTagString(ExifInterface.TAG_GPS_LONGITUDE,exif);//경도
+               myAttribute += getTagString(ExifInterface.TAG_GPS_LONGITUDE_REF, exif);
+               mView.setText(myAttribute);
+                }
+               private String getTagString(String tag, ExifInterface exif) {
+               return (tag + " : " + exif.getAttribute(tag) + "\n");
+                }
+                //%%%%%%%%%%%%EXIF%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
 
 
     LocationCallback locationCallback = new LocationCallback() {
@@ -321,6 +360,11 @@ public class MapsActivity extends AppCompatActivity
                 List<LatLng> points = polyline.getPoints();
                 points.add(currentLatLng);
                 polyline.setPoints(points);
+
+                //%%%%%%%%%%EXIF%%%%%%%%%%%%%%
+                MarkerOptions marker = new MarkerOptions();
+                marker.position(myLatLng);
+                mGoogleMap.addMarker(marker);
 
 
 

@@ -32,13 +32,12 @@
                     android:layout_height="150dp"
                     android:layout_alignParentTop="true"
                     android:layout_centerHorizontal="true">
-
                 </ImageView>
 
             </android.support.v7.widget.CardView>
             <TextView
                 android:fontFamily="@font/comic"
-                android:id="@+id/textViewID"
+                android:id="@+id/textID"
                 android:textColorHint="@color/grayLight"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -137,7 +136,6 @@
                 android:textColor="@color/colorAccent"
                 android:textColorHint="@color/colorAccent" />
         </LinearLayout>
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

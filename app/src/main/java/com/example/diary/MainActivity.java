@@ -28,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
         final Button diaryButton = (Button) findViewById(R.id.diaryButton);
         final Button friendButton = (Button) findViewById(R.id.friendButton);
         final Button galleryButton =(Button) findViewById(R.id.galleryButton);
+        final Button exifBtn = (Button) findViewById(R.id.exifBtn);
         final CardView card1 = (CardView) findViewById(R.id.card1);
 
         meButton.setOnClickListener(new View.OnClickListener() {
@@ -70,6 +71,14 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent galleryButtonIntent = new Intent(MainActivity.this, ImageGridActivity.class);
                 MainActivity.this.startActivity(galleryButtonIntent);
+            }
+        });
+
+        exifBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent exifBtnIntent = new Intent(MainActivity.this, Exif.class);
+                MainActivity.this.startActivity(exifBtnIntent);
             }
         });
 

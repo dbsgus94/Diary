@@ -2,7 +2,6 @@ package com.example.diary;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.media.ExifInterface;
 import android.os.Bundle;
 
 import java.util.ArrayList;
@@ -75,12 +74,15 @@ import java.util.Locale;
 import java.util.Map;
 
 import android.app.Activity;
-import android.media.ExifInterface;
+import android.support.media.ExifInterface;
 import android.os.Environment;
 import android.widget.TextView;
 
 public class MapsActivity extends AppCompatActivity
         implements OnMapReadyCallback, ActivityCompat.OnRequestPermissionsResultCallback {
+
+    private static final int RQS_OPEN_IMAGE = 1;
+    private static final int RQS_READ_EXTERNAL_STORAGE = 2;
     public int i = 0;
     private AlertDialog dialog;
     private GoogleMap mGoogleMap = null;
@@ -109,12 +111,8 @@ public class MapsActivity extends AppCompatActivity
     boolean needRequest = false;
 
     private ArrayList<LatLng> points;
-
-
     // 앱을 실행하기 위해 필요한 퍼미션을 정의합니다.
     String[] REQUIRED_PERMISSIONS = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};  // 외부 저장소
-
-
     Location mCurrentLocatiion;
     LatLng currentPosition;
 /*
@@ -125,19 +123,15 @@ public class MapsActivity extends AppCompatActivity
     */
 
 
-
     private View mLayout;  // Snackbar 사용하기 위해서는 View가 필요합니다.
     // (참고로 Toast에서는 Context가 필요했습니다.)
-
-    private TextView mView; // %%%%%%%EXIF%%%%%%%
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContext = MapsActivity.this;
-
         points = new ArrayList<LatLng>();
+
 
 
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
@@ -171,43 +165,8 @@ public class MapsActivity extends AppCompatActivity
         MapFragment mapFragment = (MapFragment) getFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-
-
         //this.init();
-
-        //%%%%%%%%%%%%%%%%%%%%%%%%%%EXIF%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-        //mView = (TextView) findViewById(R.id.textview);
-         String filename = Environment.getExternalStorageDirectory().getPath() + "/중간고사2.jpg";
-         try {
-          ExifInterface exif = new ExifInterface(filename);
-          showExif(exif);
-         } catch (IOException e) {
-         e.printStackTrace();
-         Toast.makeText(this, "Error!", Toast.LENGTH_LONG).show();
-         }
-           }
-
-           private void showExif(ExifInterface exif) {
-
-            //LatLng myAttribute = new LatLng(getLatlong(),getAltitude());
-               String myAttribute = "[Exif information] \n\n";
-               myAttribute += getTagString(ExifInterface.TAG_DATETIME, exif);//날짜
-               myAttribute += getTagString(ExifInterface.TAG_GPS_LATITUDE,exif); //위도
-               myAttribute += getTagString(ExifInterface.TAG_GPS_LATITUDE_REF, exif);
-               myAttribute += getTagString(ExifInterface.TAG_GPS_LONGITUDE,exif);//경도
-               myAttribute += getTagString(ExifInterface.TAG_GPS_LONGITUDE_REF, exif);
-               mView.setText(myAttribute);
-                }
-               private String getTagString(String tag, ExifInterface exif) {
-               return (tag + " : " + exif.getAttribute(tag) + "\n");
-                }
-                //%%%%%%%%%%%%EXIF%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-
-
+    }
 
     LocationCallback locationCallback = new LocationCallback() {
         @Override
@@ -341,8 +300,26 @@ public class MapsActivity extends AppCompatActivity
 
         MarkerOptions markerOptions = new MarkerOptions();
         PolylineOptions routes = new PolylineOptions().width(5).color(Color.BLUE);
-        polyline= mGoogleMap.addPolyline(routes);
-            btn_timer_start.setOnClickListener(new View.OnClickListener() {
+        polyline = mGoogleMap.addPolyline(routes);
+
+
+        ExifInterface exif = null;
+        String filename ="/20190513_204254.jpg";
+        try {
+            exif = new ExifInterface(filename);
+        } catch (IOException e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Error!", Toast.LENGTH_LONG).show();
+        }
+        String lat = exif.getAttribute(ExifInterface.TAG_GPS_LATITUDE);
+        String long1 = exif.getAttribute(ExifInterface.TAG_GPS_LONGITUDE);
+       // Log.i("TAG", "latitude : " + latLong[0] + ", longitude : " + latLong[1]);
+        double latitude =Double.parseDouble(lat);
+        double longtitude =Double.parseDouble(long1);
+
+
+
+        btn_timer_start.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 btn_timer_start.setBackgroundColor(getResources().getColor(R.color.colorGray));
@@ -352,23 +329,18 @@ public class MapsActivity extends AppCompatActivity
                 }
                 isBtnStart = true;
                 Toast.makeText(mContext, "시작되었습니다", Toast.LENGTH_SHORT).show();
-
                 LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
-                LatLng myLatLng = new LatLng(location.getLatitude(),location.getLongitude());
-
+                LatLng myLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+                LatLng exifLatLng = new LatLng(latitude,longtitude);
 
                 List<LatLng> points = polyline.getPoints();
-                points.add(currentLatLng);
+                points.add(exifLatLng);
                 polyline.setPoints(points);
 
                 //%%%%%%%%%%EXIF%%%%%%%%%%%%%%
                 MarkerOptions marker = new MarkerOptions();
-                marker.position(myLatLng);
+                marker.position(exifLatLng);
                 mGoogleMap.addMarker(marker);
-
-
-
-
 
 
                 //currentMarker=mGoogleMap.addMarker(markerOptions);
@@ -688,6 +660,22 @@ public class MapsActivity extends AppCompatActivity
                 }
 
                 break;
+        }
+    }
+    private boolean CheckPermission_READ_EXTERNAL_STORAGE() {
+        // return true: have permission
+        // return false: no permission
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                    RQS_READ_EXTERNAL_STORAGE);
+
+            return false;
+        }else{
+            return true;
         }
     }
 

@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="Gradle: artifacts:naveridlogin_android_sdk_4.2.0:unspecified@jar">
+    <CLASSES>
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/naveridlogin_android_sdk_4.2.0.aar/8d9ff80f0483faab3abb77b2c6e6db49/res" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/naveridlogin_android_sdk_4.2.0.aar/8d9ff80f0483faab3abb77b2c6e6db49/jars/classes.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

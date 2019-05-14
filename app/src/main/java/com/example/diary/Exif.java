@@ -28,15 +28,14 @@ import android.widget.Toast;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import static android.media.ExifInterface.TAG_GPS_LATITUDE;
+
 public class Exif extends AppCompatActivity {
 
     private static final int RQS_OPEN_IMAGE = 1;
     private static final int RQS_READ_EXTERNAL_STORAGE = 2;
-    private static double lati,long2;
-    private static String lat,long1;
     Button buttonOpen;
     TextView textUri;
-    private static TextView exifText;
     ImageView imageView;
 
     Uri targetUri = null;
@@ -77,7 +76,6 @@ public class Exif extends AppCompatActivity {
 
     View.OnClickListener imageOnClickListener =
             new View.OnClickListener(){
-
                 @Override
                 public void onClick(View view) {
 
@@ -110,23 +108,29 @@ public class Exif extends AppCompatActivity {
 
             String photoPath = getRealPathFromURI(photoUri);
             try {
-                /*
-                ExifInterface (String filename) added in API level 5
-                 */
                 ExifInterface exifInterface = new ExifInterface(photoPath);
-                //String exif="Exif: ";
-                lat = exifInterface.getAttribute(ExifInterface.TAG_GPS_LATITUDE);
-                lat +=exifInterface.getAttribute(ExifInterface.TAG_GPS_LATITUDE_REF);
-                String long1 = exifInterface.getAttribute(ExifInterface.TAG_GPS_LONGITUDE);
-                //exif += "\n TAG_GPS_LONGITUDE_REF: " +
-                  //      exifInterface.getAttribute(ExifInterface.TAG_GPS_LONGITUDE_REF);
+                String exif="Exif: ";
+                //exif = exifInterface.getAttribute(ExifInterface.TAG_GPS_LATITUDE);
+                //exif +=exifInterface.getAttribute(ExifInterface.TAG_GPS_LATITUDE_REF);
+                //exif += exifInterface.getAttribute(ExifInterface.TAG_GPS_LONGITUDE);
+                //exif += exifInterface.getAttribute(ExifInterface.TAG_GPS_LONGITUDE_REF);
+                GeoDegree geoDegree = new GeoDegree(exifInterface);
+                Float latln=geoDegree.getLatitude();
+               // latln+=geoDegree.getLatitudeE6();
+                //String latln= exifInterface.getAttribute(ExifInterface.TAG_GPS_LATITUDE);
+                //latln+=exifInterface.getAttribute(ExifInterface.TAG_GPS_LATITUDE_REF);
 
-                Toast.makeText(getApplicationContext(),
-                        lat,
-                        Toast.LENGTH_LONG).show();
+                //Double lati = Double.parseDouble(latln);
 
-                lati = Double.parseDouble(lat);
-                long2 = Double.parseDouble(long1);
+                //lat = exifInterface.getAttribute(ExifInterface.TAG_GPS_LATITUDE);
+                //lat +=exifInterface.getAttribute(ExifInterface.TAG_GPS_LATITUDE_REF);
+                //long1 = exifInterface.getAttribute(ExifInterface.TAG_GPS_LONGITUDE);
+                //long1+= exifInterface.getAttribute(ExifInterface.TAG_GPS_LONGITUDE_REF);
+
+                Toast.makeText(getApplicationContext(),""+latln,Toast.LENGTH_SHORT).show();
+
+                //lati = Double.parseDouble(lat);
+                //long2 = Double.parseDouble(long1);
 
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
@@ -181,7 +185,6 @@ public class Exif extends AppCompatActivity {
 
 
         textUri = (TextView) findViewById(R.id.texturi);
-        exifText = (TextView) findViewById(R.id.exifText);
         textUri.setOnClickListener(textUriOnClickListener);
 
         imageView = (ImageView)findViewById(R.id.image);
@@ -198,7 +201,6 @@ public class Exif extends AppCompatActivity {
                 targetUri = dataUri;
                 textUri.setText(dataUri.toString());
                 imageView.setImageBitmap(null);
-                exifText.setText(""+lat);
             }
         }
 

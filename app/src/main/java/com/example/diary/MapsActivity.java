@@ -88,6 +88,7 @@ public class MapsActivity extends AppCompatActivity
 
     private static final int RQS_OPEN_IMAGE = 1;
     private static final int RQS_READ_EXTERNAL_STORAGE = 2;
+    private static float lat,longT=0;
     public int i = 0;
     private AlertDialog dialog;
     private GoogleMap mGoogleMap = null;
@@ -134,9 +135,10 @@ public class MapsActivity extends AppCompatActivity
             String photoPath = getRealPathFromURI(photoUri);
             try {
                 ExifInterface exifInterface = new ExifInterface(photoPath);
-                //GeoDegree geoDegree = new GeoDegree(exifInterface);
-                //Float latln=geoDegree.getLatitude();
-                //Toast.makeText(getApplicationContext(),""+latln,Toast.LENGTH_SHORT).show();
+                GeoDegree geoDegree = new GeoDegree(exifInterface);
+                 lat=geoDegree.getLatitude();
+                 longT = geoDegree.getLongitude();
+                Toast.makeText(getApplicationContext(),""+lat+"\n"+longT,Toast.LENGTH_SHORT).show();
 
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
@@ -294,8 +296,6 @@ public class MapsActivity extends AppCompatActivity
 
     }
 
-
-
     @Override
     public void onMapReady(GoogleMap googleMap) {
 
@@ -385,17 +385,18 @@ public class MapsActivity extends AppCompatActivity
                 }
                 isBtnStart = true;
                 Toast.makeText(mContext, "시작되었습니다", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getApplicationContext(),""+lat+""+"\n"+longT,Toast.LENGTH_SHORT).show();
                 LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
-                LatLng myLatLng = new LatLng(location.getLatitude(), location.getLongitude());
-
+                LatLng exifLatLng = new LatLng(lat, longT);
+                showExif(targetUri);
                 //List<LatLng> points = polyline.getPoints();
                 //points.add(exifLatLng);
                 //polyline.setPoints(points);
 
                 //%%%%%%%%%%EXIF%%%%%%%%%%%%%%
-                MarkerOptions marker = new MarkerOptions();
-                //marker.position(exifLatLng);
-                mGoogleMap.addMarker(marker);
+                mGoogleMap.addMarker(new MarkerOptions().position(exifLatLng)
+                        .title("Hi I'm 께게게게게"));
+                mGoogleMap.moveCamera(CameraUpdateFactory.newLatLng(exifLatLng));
 
 
                 //currentMarker=mGoogleMap.addMarker(markerOptions);

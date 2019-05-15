@@ -1,14 +1,19 @@
 package com.example.diary;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.DocumentsContract;
+import android.provider.MediaStore;
 import android.support.v4.app.FragmentActivity;
 
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -111,10 +116,71 @@ public class MapsActivity extends AppCompatActivity
     boolean needRequest = false;
 
     private ArrayList<LatLng> points;
+
     // 앱을 실행하기 위해 필요한 퍼미션을 정의합니다.
     String[] REQUIRED_PERMISSIONS = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};  // 외부 저장소
     Location mCurrentLocatiion;
     LatLng currentPosition;
+    Uri targetUri = null;
+    Button buttonOpen;
+
+
+
+
+    void showExif(Uri photoUri){
+
+        if(photoUri != null){
+
+            String photoPath = getRealPathFromURI(photoUri);
+            try {
+                ExifInterface exifInterface = new ExifInterface(photoPath);
+                //GeoDegree geoDegree = new GeoDegree(exifInterface);
+                //Float latln=geoDegree.getLatitude();
+                //Toast.makeText(getApplicationContext(),""+latln,Toast.LENGTH_SHORT).show();
+
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+                Toast.makeText(getApplicationContext(),
+                        "Something wrong:\n" + e.toString(),
+                        Toast.LENGTH_LONG).show();
+            } catch (IOException e) {
+                e.printStackTrace();
+                Toast.makeText(getApplicationContext(),
+                        "Something wrong:\n" + e.toString(),
+                        Toast.LENGTH_LONG).show();
+            }
+
+        }else{
+            Toast.makeText(getApplicationContext(),
+                    "photoUri == null",
+                    Toast.LENGTH_LONG).show();
+        }
+    };
+    private String getRealPathFromURI(Uri uri){
+        String filePath = "";
+        String wholeID = DocumentsContract.getDocumentId(uri);
+
+        // Split at colon, use second item in the array
+        String id = wholeID.split(":")[1];
+
+        String[] column = { MediaStore.Images.Media.DATA };
+
+        // where id is equal to
+        String sel = MediaStore.Images.Media._ID + "=?";
+
+        Cursor cursor = getApplicationContext().getContentResolver()
+                .query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                        column, sel, new String[]{ id }, null);
+
+        int columnIndex = cursor.getColumnIndex(column[0]);
+
+        if (cursor.moveToFirst()) {
+            filePath = cursor.getString(columnIndex);
+        }
+        cursor.close();
+        return filePath;
+    }
+
 /*
     private void init() {
 
@@ -132,33 +198,25 @@ public class MapsActivity extends AppCompatActivity
         mContext = MapsActivity.this;
         points = new ArrayList<LatLng>();
 
-
-
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
                 WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_maps);
 
-
         MapsInitializer.initialize(getApplicationContext());
-
 
         mLayout = findViewById(R.id.layout_maps);
 
-
         Log.d(TAG, "onCreate");
-
 
         locationRequest = new LocationRequest()
                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
                 .setInterval(UPDATE_INTERVAL_MS)
                 .setFastestInterval(FASTEST_UPDATE_INTERVAL_MS);
 
-
         LocationSettingsRequest.Builder builder =
                 new LocationSettingsRequest.Builder();
 
         builder.addLocationRequest(locationRequest);
-
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
@@ -166,7 +224,9 @@ public class MapsActivity extends AppCompatActivity
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
         //this.init();
+
     }
+
 
     LocationCallback locationCallback = new LocationCallback() {
         @Override
@@ -235,6 +295,7 @@ public class MapsActivity extends AppCompatActivity
     }
 
 
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
 
@@ -297,27 +358,22 @@ public class MapsActivity extends AppCompatActivity
         btn_timer_start = (Button) findViewById(R.id.btn_timer_start);
         btn_timer_stop = (Button) findViewById(R.id.btn_timer_finish);
         btn_timer_reset = (Button) findViewById(R.id.btn_timer_reset);
+        buttonOpen = (Button) findViewById(R.id.opendocument);
+        buttonOpen.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent();
+                intent.setAction(Intent.ACTION_OPEN_DOCUMENT);
+                intent.addCategory(Intent.CATEGORY_OPENABLE);
+                intent.setType("image/jpeg");
+                startActivityForResult(intent, RQS_OPEN_IMAGE);
+
+            }
+        });
 
         MarkerOptions markerOptions = new MarkerOptions();
         PolylineOptions routes = new PolylineOptions().width(5).color(Color.BLUE);
         polyline = mGoogleMap.addPolyline(routes);
-
-
-        ExifInterface exif = null;
-        String filename ="/20190513_204254.jpg";
-        try {
-            exif = new ExifInterface(filename);
-        } catch (IOException e) {
-            e.printStackTrace();
-            Toast.makeText(this, "Error!", Toast.LENGTH_LONG).show();
-        }
-        String lat = exif.getAttribute(ExifInterface.TAG_GPS_LATITUDE);
-        String long1 = exif.getAttribute(ExifInterface.TAG_GPS_LONGITUDE);
-       // Log.i("TAG", "latitude : " + latLong[0] + ", longitude : " + latLong[1]);
-        double latitude =Double.parseDouble(lat);
-        double longtitude =Double.parseDouble(long1);
-
-
 
         btn_timer_start.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -331,15 +387,14 @@ public class MapsActivity extends AppCompatActivity
                 Toast.makeText(mContext, "시작되었습니다", Toast.LENGTH_SHORT).show();
                 LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
                 LatLng myLatLng = new LatLng(location.getLatitude(), location.getLongitude());
-                LatLng exifLatLng = new LatLng(latitude,longtitude);
 
-                List<LatLng> points = polyline.getPoints();
-                points.add(exifLatLng);
-                polyline.setPoints(points);
+                //List<LatLng> points = polyline.getPoints();
+                //points.add(exifLatLng);
+                //polyline.setPoints(points);
 
                 //%%%%%%%%%%EXIF%%%%%%%%%%%%%%
                 MarkerOptions marker = new MarkerOptions();
-                marker.position(exifLatLng);
+                //marker.position(exifLatLng);
                 mGoogleMap.addMarker(marker);
 
 
@@ -371,6 +426,7 @@ public class MapsActivity extends AppCompatActivity
 
         });
 
+
         btn_timer_reset.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -401,6 +457,7 @@ public class MapsActivity extends AppCompatActivity
     }
 
 
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -419,6 +476,7 @@ public class MapsActivity extends AppCompatActivity
 
 
     }
+
 
 
     @Override
@@ -528,7 +586,6 @@ public class MapsActivity extends AppCompatActivity
 
     //여기부터는 런타임 퍼미션 처리을 위한 메소드들
     private boolean checkPermission() {
-
         int hasFineLocationPermission = ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION);
         int hasCoarseLocationPermission = ContextCompat.checkSelfPermission(this,
@@ -609,6 +666,21 @@ public class MapsActivity extends AppCompatActivity
             }
 
         }
+
+        switch (permsRequestCode) {
+            case RQS_READ_EXTERNAL_STORAGE: {
+                // If request is cancelled, the result arrays are empty.
+                if (grandResults.length > 0
+                        && grandResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    showExif(targetUri);
+                } else {
+                    Toast.makeText(this,
+                            "permission denied!",
+                            Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
+
     }
 
 
@@ -642,6 +714,15 @@ public class MapsActivity extends AppCompatActivity
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+        if (resultCode == Activity.RESULT_OK) {
+
+            Uri dataUri = data.getData();
+
+            if (requestCode == RQS_OPEN_IMAGE) {
+                targetUri = dataUri;
+            }
+        }
+
         switch (requestCode) {
 
             case GPS_ENABLE_REQUEST_CODE:
@@ -668,11 +749,9 @@ public class MapsActivity extends AppCompatActivity
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
-
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
                     RQS_READ_EXTERNAL_STORAGE);
-
             return false;
         }else{
             return true;

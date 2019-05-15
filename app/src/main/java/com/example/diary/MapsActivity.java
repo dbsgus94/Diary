@@ -2,7 +2,12 @@ package com.example.diary;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -14,6 +19,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
+import android.support.annotation.DrawableRes;
 import android.support.v4.app.FragmentActivity;
 
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -23,7 +29,9 @@ import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMapLongClickListener;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
@@ -45,8 +53,11 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.Toast;
@@ -83,6 +94,8 @@ import android.support.media.ExifInterface;
 import android.os.Environment;
 import android.widget.TextView;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 public class MapsActivity extends AppCompatActivity
         implements OnMapReadyCallback, ActivityCompat.OnRequestPermissionsResultCallback {
 
@@ -99,7 +112,7 @@ public class MapsActivity extends AppCompatActivity
     private Button btn_timer_start;
     private Button btn_timer_stop;
     private Button btn_timer_reset;
-    public static Context mContext;
+    public static Context context;
     private boolean isBtnStart = false;
 
     private FusedLocationProviderClient mFusedLocationClient;
@@ -124,6 +137,7 @@ public class MapsActivity extends AppCompatActivity
     LatLng currentPosition;
     Uri targetUri = null;
     Button buttonOpen;
+
 
 
 
@@ -191,13 +205,12 @@ public class MapsActivity extends AppCompatActivity
     */
 
 
-    private View mLayout;  // Snackbar 사용하기 위해서는 View가 필요합니다.
-    // (참고로 Toast에서는 Context가 필요했습니다.)
+    private View mLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mContext = MapsActivity.this;
+        context = MapsActivity.this;
         points = new ArrayList<LatLng>();
 
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
@@ -225,6 +238,8 @@ public class MapsActivity extends AppCompatActivity
         MapFragment mapFragment = (MapFragment) getFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+
         //this.init();
 
     }
@@ -302,11 +317,11 @@ public class MapsActivity extends AppCompatActivity
         Log.d(TAG, "onMapReady :");
 
         mGoogleMap = googleMap;
+        googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+
         //런타임 퍼미션 요청 대화상자나 GPS 활성 요청 대화상자 보이기전에
         //지도의 초기위치를 서울로 이동
         setDefaultLocation();
-
-
         //런타임 퍼미션 처리
         // 1. 위치 퍼미션을 가지고 있는지 체크합니다.
         int hasFineLocationPermission = ContextCompat.checkSelfPermission(this,
@@ -352,6 +367,7 @@ public class MapsActivity extends AppCompatActivity
             }
 
         }
+
         mGoogleMap.getUiSettings().setMyLocationButtonEnabled(true);
         mGoogleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
 
@@ -374,34 +390,39 @@ public class MapsActivity extends AppCompatActivity
         MarkerOptions markerOptions = new MarkerOptions();
         PolylineOptions routes = new PolylineOptions().width(5).color(Color.BLUE);
         polyline = mGoogleMap.addPolyline(routes);
+        Bitmap.Config conf = Bitmap.Config.ARGB_8888;
+        Bitmap bmp = Bitmap.createBitmap(80, 80, conf);
+        Canvas canvas1 = new Canvas(bmp);
+
+// paint defines the text color, stroke width and size
+        Paint color = new Paint();
+        color.setTextSize(35);
+        color.setColor(Color.BLACK);
+
+// modify canvas
+        canvas1.drawBitmap(BitmapFactory.decodeResource(getResources(),
+                R.drawable.diary), 0,0, color);
+        canvas1.drawText("User Name!", 30, 40, color);
 
         btn_timer_start.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 btn_timer_start.setBackgroundColor(getResources().getColor(R.color.colorGray));
                 if (isBtnStart) {
-                    Toast.makeText(mContext, "이미 시작되었습니다", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "이미 시작되었습니다", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 isBtnStart = true;
-                Toast.makeText(mContext, "시작되었습니다", Toast.LENGTH_SHORT).show();
-                //Toast.makeText(getApplicationContext(),""+lat+""+"\n"+longT,Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "시작되었습니다", Toast.LENGTH_SHORT).show();
                 LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
                 LatLng exifLatLng = new LatLng(lat, longT);
                 showExif(targetUri);
                 //List<LatLng> points = polyline.getPoints();
                 //points.add(exifLatLng);
                 //polyline.setPoints(points);
-
                 //%%%%%%%%%%EXIF%%%%%%%%%%%%%%
                 mGoogleMap.addMarker(new MarkerOptions().position(exifLatLng)
-                        .title("Hi I'm 께게게게게"));
-                mGoogleMap.moveCamera(CameraUpdateFactory.newLatLng(exifLatLng));
-
-
-                //currentMarker=mGoogleMap.addMarker(markerOptions);
-
-
+                        .title("Hi I'm 께게게게게")).setIcon(BitmapDescriptorFactory.fromBitmap(bmp));
                 //polylineOptions.color(Color.RED);
                 //polylineOptions.width(5);
                 //polylineOptions.add(currentPosition,myLatLng);
@@ -419,7 +440,7 @@ public class MapsActivity extends AppCompatActivity
             public void onClick(View v) {
                 btn_timer_stop.setBackgroundColor(getResources().getColor(R.color.colorGray));
                 if (isBtnStart) {
-                    Toast.makeText(mContext, "오늘 일정은 여기까지 입니다.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "오늘 일정은 여기까지 입니다.", Toast.LENGTH_SHORT).show();
                     isBtnStart = false;
                     return;
                 }
@@ -435,6 +456,9 @@ public class MapsActivity extends AppCompatActivity
                 mGoogleMap.clear();
             }
         });
+
+
+
 /*
         mGoogleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
@@ -454,8 +478,10 @@ public class MapsActivity extends AppCompatActivity
         });
         */
 
+        }
 
-    }
+
+
 
 
 
@@ -758,6 +784,4 @@ public class MapsActivity extends AppCompatActivity
             return true;
         }
     }
-
-
 }

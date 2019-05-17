@@ -94,7 +94,7 @@ import android.support.media.ExifInterface;
 import android.os.Environment;
 import android.widget.TextView;
 
-import de.hdodenhof.circleimageview.CircleImageView;
+//import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MapsActivity extends AppCompatActivity
         implements OnMapReadyCallback, ActivityCompat.OnRequestPermissionsResultCallback {
@@ -137,10 +137,6 @@ public class MapsActivity extends AppCompatActivity
     LatLng currentPosition;
     Uri targetUri = null;
     Button buttonOpen;
-
-
-
-
 
     void showExif(Uri photoUri){
 
@@ -317,7 +313,7 @@ public class MapsActivity extends AppCompatActivity
         Log.d(TAG, "onMapReady :");
 
         mGoogleMap = googleMap;
-        googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+        //googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
         //런타임 퍼미션 요청 대화상자나 GPS 활성 요청 대화상자 보이기전에
         //지도의 초기위치를 서울로 이동
@@ -388,8 +384,8 @@ public class MapsActivity extends AppCompatActivity
         });
 
         MarkerOptions markerOptions = new MarkerOptions();
-        PolylineOptions routes = new PolylineOptions().width(5).color(Color.BLUE);
-        polyline = mGoogleMap.addPolyline(routes);
+        //PolylineOptions routes = new PolylineOptions().width(5).color(Color.BLUE);
+        //polyline = mGoogleMap.addPolyline(routes);
         Bitmap.Config conf = Bitmap.Config.ARGB_8888;
         Bitmap bmp = Bitmap.createBitmap(80, 80, conf);
         Canvas canvas1 = new Canvas(bmp);
@@ -401,7 +397,7 @@ public class MapsActivity extends AppCompatActivity
 
 // modify canvas
         canvas1.drawBitmap(BitmapFactory.decodeResource(getResources(),
-                R.drawable.diary), 0,0, color);
+        R.drawable.diary), 0,0, color);
         canvas1.drawText("User Name!", 30, 40, color);
 
         btn_timer_start.setOnClickListener(new View.OnClickListener() {
@@ -422,7 +418,7 @@ public class MapsActivity extends AppCompatActivity
                 //polyline.setPoints(points);
                 //%%%%%%%%%%EXIF%%%%%%%%%%%%%%
                 mGoogleMap.addMarker(new MarkerOptions().position(exifLatLng)
-                        .title("Hi I'm 께게게게게")).setIcon(BitmapDescriptorFactory.fromBitmap(bmp));
+                        .title("Hi!")).setIcon(BitmapDescriptorFactory.fromBitmap(bmp));
                 //polylineOptions.color(Color.RED);
                 //polylineOptions.width(5);
                 //polylineOptions.add(currentPosition,myLatLng);

@@ -77,9 +77,6 @@ public class MeActivity extends AppCompatActivity {
                     else
                         textPhone.setText("전화번호를 입력하세요.");
 
-
-
-
                     String db_picture = jsonResponse.getString("picture");
                     bitmap = getImage(db_picture);
                     ImageView pic = (ImageView)findViewById(R.id.imageToUpload);
@@ -94,10 +91,6 @@ public class MeActivity extends AppCompatActivity {
         MeRequest meRequest = new MeRequest(userID, responseLister);
         RequestQueue queue = Volley.newRequestQueue(MeActivity.this);
         queue.add(meRequest);
-
-
-
-
 
         Button saveButton = (Button) findViewById(R.id.saveButton);
         saveButton.setOnClickListener(new View.OnClickListener() {

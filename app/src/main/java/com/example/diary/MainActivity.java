@@ -1,7 +1,11 @@
 package com.example.diary;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Handler;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.graphics.drawable.Drawable;
 import android.support.v4.app.FragmentManager;
@@ -30,6 +34,14 @@ public class MainActivity extends AppCompatActivity {
         final Button galleryButton =(Button) findViewById(R.id.galleryButton);
         final CardView card1 = (CardView) findViewById(R.id.card1);
 
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)!= PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                        1);
+            }
+        }
+
         meButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -41,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
                 Intent meButtonintent = new Intent(MainActivity.this, MeActivity.class);
                 meButtonintent.putExtra("id_value",userID);
                 MainActivity.this.startActivity(meButtonintent);
+
             }
         });
         diaryButton.setOnClickListener(new View.OnClickListener() {

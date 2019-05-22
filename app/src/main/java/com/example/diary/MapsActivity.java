@@ -101,7 +101,8 @@ public class MapsActivity extends AppCompatActivity
 
     private static final int RQS_OPEN_IMAGE = 1;
     private static final int RQS_READ_EXTERNAL_STORAGE = 2;
-    private static float lat,longT=0;
+    private static float lat,longT = 0;
+    private static String photoPath;
     public int i = 0;
     private AlertDialog dialog;
     private GoogleMap mGoogleMap = null;
@@ -123,7 +124,7 @@ public class MapsActivity extends AppCompatActivity
     private static final int GPS_ENABLE_REQUEST_CODE = 2001;
     private static final int UPDATE_INTERVAL_MS = 1000;  // 1초
     private static final int FASTEST_UPDATE_INTERVAL_MS = 500; // 0.5초
-
+    private static int flag = 0;
 
     // onRequestPermissionsResult에서 수신된 결과에서 ActivityCompat.requestPermissions를 사용한 퍼미션 요청을 구별하기 위해 사용됩니다.
     private static final int PERMISSIONS_REQUEST_CODE = 100;
@@ -142,7 +143,7 @@ public class MapsActivity extends AppCompatActivity
 
         if(photoUri != null){
 
-            String photoPath = getRealPathFromURI(photoUri);
+            photoPath = getRealPathFromURI(photoUri);
             try {
                 ExifInterface exifInterface = new ExifInterface(photoPath);
                 GeoDegree geoDegree = new GeoDegree(exifInterface);
@@ -238,6 +239,7 @@ public class MapsActivity extends AppCompatActivity
         //this.init();
 
     }
+
 
 
     LocationCallback locationCallback = new LocationCallback() {
@@ -373,6 +375,7 @@ public class MapsActivity extends AppCompatActivity
         btn_timer_reset = (Button) findViewById(R.id.btn_timer_reset);
         buttonOpen = (Button) findViewById(R.id.opendocument);
         buttonOpen.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent();
@@ -387,51 +390,9 @@ public class MapsActivity extends AppCompatActivity
         MarkerOptions markerOptions = new MarkerOptions();
         //PolylineOptions routes = new PolylineOptions().width(5).color(Color.BLUE);
         //polyline = mGoogleMap.addPolyline(routes);
-        Bitmap.Config conf = Bitmap.Config.ARGB_8888;
-        Bitmap bmp = Bitmap.createBitmap(80, 80, conf);
-        Canvas canvas1 = new Canvas(bmp);
 
-// paint defines the text color, stroke width and size
-        Paint color = new Paint();
-        color.setTextSize(35);
-        color.setColor(Color.BLACK);
 
-// modify canvas
-        canvas1.drawBitmap(BitmapFactory.decodeResource(getResources(),
-        R.drawable.diary), 0,0, color);
-        canvas1.drawText("User Name!", 30, 40, color);
 
-        btn_timer_start.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                btn_timer_start.setBackgroundColor(getResources().getColor(R.color.colorGray));
-                if (isBtnStart) {
-                    Toast.makeText(context, "이미 시작되었습니다", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                isBtnStart = true;
-                Toast.makeText(context, "시작되었습니다", Toast.LENGTH_SHORT).show();
-                LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
-                LatLng exifLatLng = new LatLng(lat, longT);
-                showExif(targetUri);
-                //List<LatLng> points = polyline.getPoints();
-                //points.add(exifLatLng);
-                //polyline.setPoints(points);
-                //%%%%%%%%%%EXIF%%%%%%%%%%%%%%
-                mGoogleMap.addMarker(new MarkerOptions().position(exifLatLng)
-                        .title("Hi!")).setIcon(BitmapDescriptorFactory.fromBitmap(bmp));
-                //polylineOptions.color(Color.RED);
-                //polylineOptions.width(5);
-                //polylineOptions.add(currentPosition,myLatLng);
-                //mGoogleMap.addPolyline(polylineOptions);
-                //currentPosition=myLatLng;
-                //arrayPoints.add(currentLatLng,myLatLng);
-                //polylineOptions.addAll(arrayPoints);
-                //mGoogleMap.addPolyline(polylineOptions);
-
-            }
-
-        });
         btn_timer_stop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -474,11 +435,57 @@ public class MapsActivity extends AppCompatActivity
             }
         });
         */
+        btn_timer_start.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                btn_timer_start.setBackgroundColor(getResources().getColor(R.color.colorGray));
+                if (isBtnStart) {
+                    Toast.makeText(context, "이미 시작되었습니다", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                isBtnStart = true;
+                Toast.makeText(context, "시작되었습니다", Toast.LENGTH_SHORT).show();
+                //LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+                showExif(targetUri);
+                LatLng exifLatLng = new LatLng(lat, longT);
+                Bitmap.Config conf = Bitmap.Config.ARGB_8888;
+                Bitmap bmp = Bitmap.createBitmap(200, 200, conf);
+
+
+                Canvas canvas1 = new Canvas(bmp);
+// paint defines the text color, stroke width and size
+                Paint color = new Paint();
+                color.setTextSize(35);
+                color.setColor(Color.BLACK);
+// modify canvas
+                Bitmap resize_bmp = resizeBitmapImg(BitmapFactory.decodeFile(photoPath));
+
+                canvas1.drawBitmap(resize_bmp, 0,0, null);
+                mGoogleMap.addMarker(new MarkerOptions()
+                        .position(exifLatLng)
+                        .title("Hi!"))
+                        .setIcon(BitmapDescriptorFactory.fromBitmap(bmp));
+
+                //List<LatLng> points = polyline.getPoints();
+                //points.add(exifLatLng);
+                //polyline.setPoints(points);
+                //%%%%%%%%%%EXIF%%%%%%%%%%%%%%
+
+
+                //polylineOptions.color(Color.RED);
+                //polylineOptions.width(5);
+                //polylineOptions.add(currentPosition,myLatLng);
+                //mGoogleMap.addPolyline(polylineOptions);
+                //currentPosition=myLatLng;
+                //arrayPoints.add(currentLatLng,myLatLng);
+                //polylineOptions.addAll(arrayPoints);
+                //mGoogleMap.addPolyline(polylineOptions);
+
+            }
+
+        });
 
         }
-
-
-
 
 
 
@@ -499,6 +506,19 @@ public class MapsActivity extends AppCompatActivity
         }
 
 
+    }
+
+    static public Bitmap resizeBitmapImg(Bitmap original) {
+
+        int resizeWidth = 200;
+
+        double aspectRatio = (double) original.getHeight() / (double) original.getWidth();
+        int targetHeight = (int) (resizeWidth * aspectRatio);
+        Bitmap result = Bitmap.createScaledBitmap(original, resizeWidth, targetHeight, false);
+        if (result != original) {
+            original.recycle();
+        }
+        return result;
     }
 
 
@@ -566,6 +586,7 @@ public class MapsActivity extends AppCompatActivity
         //if (currentMarker != null) currentMarker.remove();
 
 
+
         LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
 
        /* MarkerOptions markerOptions = new MarkerOptions();
@@ -576,9 +597,11 @@ public class MapsActivity extends AppCompatActivity
 
 
         currentMarker = mGoogleMap.addMarker(markerOptions);*/
-
-        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLng(currentLatLng);
-        mGoogleMap.moveCamera(cameraUpdate);
+        if(flag != 1) {
+            CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLng(currentLatLng);
+            mGoogleMap.moveCamera(cameraUpdate);
+            flag = 1;
+        }
 
     }
 
@@ -589,7 +612,7 @@ public class MapsActivity extends AppCompatActivity
         //디폴트 위치, Seoul
         LatLng DEFAULT_LOCATION = new LatLng(37.56, 126.97);
         String markerTitle = "위치정보 가져올 수 없음";
-        String markerSnippet = "위치 퍼미션과 GPS 활성 요부 확인하세요";
+        String markerSnippet = "위치 퍼미션과 GPS 활성 여부 확인하세요";
 
 
         if (currentMarker != null) currentMarker.remove();

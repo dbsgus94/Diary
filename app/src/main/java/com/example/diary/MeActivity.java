@@ -17,6 +17,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -156,6 +157,7 @@ public class MeActivity extends AppCompatActivity {
                 bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImage);
                 imageView.setImageBitmap(bitmap);
                 bitImage = getStringImage(bitmap);
+                Toast.makeText(this, ""+selectedImage, Toast.LENGTH_LONG).show();
 
 
             } catch (FileNotFoundException e) {

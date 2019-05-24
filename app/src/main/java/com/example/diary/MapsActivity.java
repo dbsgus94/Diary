@@ -11,7 +11,10 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 import android.graphics.Color;
@@ -53,6 +56,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 
+import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -125,6 +129,8 @@ public class MapsActivity extends AppCompatActivity
     private static final int UPDATE_INTERVAL_MS = 1000;  // 1초
     private static final int FASTEST_UPDATE_INTERVAL_MS = 500; // 0.5초
     private static int flag = 0;
+    private ArrayList<String> images;
+
 
     // onRequestPermissionsResult에서 수신된 결과에서 ActivityCompat.requestPermissions를 사용한 퍼미션 요청을 구별하기 위해 사용됩니다.
     private static final int PERMISSIONS_REQUEST_CODE = 100;
@@ -307,10 +313,46 @@ public class MapsActivity extends AppCompatActivity
         }
 
     }
+    private ArrayList<String> getPathOfAllImages()
+    {
+        ArrayList<String> result = new ArrayList<>();
+        Uri uri = android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+        String[] projection = { MediaStore.MediaColumns.DATA, MediaStore.MediaColumns.DISPLAY_NAME };
+
+        Cursor cursor = getContentResolver().query(uri, projection, null, null, MediaStore.MediaColumns.DATE_ADDED + " desc");
+        int columnIndex = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
+        int columnDisplayname = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DISPLAY_NAME);
+
+        int lastIndex;
+        while (cursor.moveToNext())
+        {
+            String absolutePathOfImage = cursor.getString(columnIndex);
+            String nameOfFile = cursor.getString(columnDisplayname);
+            lastIndex = absolutePathOfImage.lastIndexOf(nameOfFile);
+            lastIndex = lastIndex >= 0 ? lastIndex : nameOfFile.length() - 1;
+
+            if (!TextUtils.isEmpty(absolutePathOfImage))
+            {
+                File file = new File(absolutePathOfImage);
+                Date lastModDate = new Date(file.lastModified());
+                String date_to_string = new SimpleDateFormat("yyyy-MM-dd").format(lastModDate);
+                if(date_to_string == "20190524") {
+                    result.add(absolutePathOfImage);
+
+                }
+            }
+        }
+
+        for (String string : result)
+        {
+            Log.i("getPathOfAllImages", "|" + string + "|");
+        }
+        return result;
+    }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-
+        images=getPathOfAllImages();
         Log.d(TAG, "onMapReady :");
 
         mGoogleMap = googleMap;
@@ -446,7 +488,9 @@ public class MapsActivity extends AppCompatActivity
                 isBtnStart = true;
                 Toast.makeText(context, "시작되었습니다", Toast.LENGTH_SHORT).show();
                 //LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
-                showExif(targetUri);
+                //showExif(targetUri);
+                Toast.makeText(context,images.toString(),Toast.LENGTH_SHORT).show();
+                /*
                 LatLng exifLatLng = new LatLng(lat, longT);
                 Bitmap.Config conf = Bitmap.Config.ARGB_8888;
                 Bitmap bmp = Bitmap.createBitmap(200, 200, conf);
@@ -465,7 +509,7 @@ public class MapsActivity extends AppCompatActivity
                         .position(exifLatLng)
                         .title("Hi!"))
                         .setIcon(BitmapDescriptorFactory.fromBitmap(bmp));
-
+                */
                 //List<LatLng> points = polyline.getPoints();
                 //points.add(exifLatLng);
                 //polyline.setPoints(points);

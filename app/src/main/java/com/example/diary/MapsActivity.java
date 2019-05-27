@@ -1,5 +1,6 @@
 package com.example.diary;
 
+import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -8,6 +9,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
+import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -64,6 +66,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.Toast;
 
 
@@ -86,6 +89,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 
 import com.google.android.gms.maps.model.Marker;
+import com.nhn.android.idp.common.logger.Logger;
 
 
 import java.io.IOException;
@@ -145,11 +149,27 @@ public class MapsActivity extends AppCompatActivity
     Uri targetUri = null;
     Button buttonOpen;
 
-    void showExif(Uri photoUri){
 
-        if(photoUri != null){
+   public Uri getUriFromPath(String Path)
+    {
+        String fileName = Path;
+        Uri fileUri = Uri.parse(fileName);
+        String filePath = fileUri.getPath();
+        Cursor c = getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,null,"_data = '"+filePath+"'",null,null);
 
-            photoPath = getRealPathFromURI(photoUri);
+        c.moveToNext();
+        int id = c.getInt(c.getColumnIndex("_Id"));
+        Uri uri_1 = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,id);
+
+        return uri_1;
+    }
+
+    void showExif(String s_path){
+
+        if(s_path != null){
+
+            photoPath = s_path;
+            //photoPath = getRealPathFromURI(photoUri);
             try {
                 ExifInterface exifInterface = new ExifInterface(photoPath);
                 GeoDegree geoDegree = new GeoDegree(exifInterface);
@@ -174,7 +194,7 @@ public class MapsActivity extends AppCompatActivity
                     "photoUri == null",
                     Toast.LENGTH_LONG).show();
         }
-    };
+    }
     private String getRealPathFromURI(Uri uri){
         String filePath = "";
         String wholeID = DocumentsContract.getDocumentId(uri);
@@ -336,9 +356,8 @@ public class MapsActivity extends AppCompatActivity
                 File file = new File(absolutePathOfImage);
                 Date lastModDate = new Date(file.lastModified());
                 String date_to_string = new SimpleDateFormat("yyyy-MM-dd").format(lastModDate);
-                if(date_to_string == "20190524") {
+                if(date_to_string.equals("2019-05-27")) {
                     result.add(absolutePathOfImage);
-
                 }
             }
         }
@@ -415,8 +434,8 @@ public class MapsActivity extends AppCompatActivity
         btn_timer_start = (Button) findViewById(R.id.btn_timer_start);
         btn_timer_stop = (Button) findViewById(R.id.btn_timer_finish);
         btn_timer_reset = (Button) findViewById(R.id.btn_timer_reset);
-        buttonOpen = (Button) findViewById(R.id.opendocument);
-        buttonOpen.setOnClickListener(new View.OnClickListener() {
+        //buttonOpen = (Button) findViewById(R.id.opendocument);
+       /* buttonOpen.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
@@ -427,9 +446,9 @@ public class MapsActivity extends AppCompatActivity
                 startActivityForResult(intent, RQS_OPEN_IMAGE);
 
             }
-        });
+        });*/
 
-        MarkerOptions markerOptions = new MarkerOptions();
+        //MarkerOptions markerOptions = new MarkerOptions();
         //PolylineOptions routes = new PolylineOptions().width(5).color(Color.BLUE);
         //polyline = mGoogleMap.addPolyline(routes);
 
@@ -488,28 +507,37 @@ public class MapsActivity extends AppCompatActivity
                 isBtnStart = true;
                 Toast.makeText(context, "시작되었습니다", Toast.LENGTH_SHORT).show();
                 //LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
-                //showExif(targetUri);
-                Toast.makeText(context,images.toString(),Toast.LENGTH_SHORT).show();
-                /*
-                LatLng exifLatLng = new LatLng(lat, longT);
-                Bitmap.Config conf = Bitmap.Config.ARGB_8888;
-                Bitmap bmp = Bitmap.createBitmap(200, 200, conf);
+
+                for(String string : images) {
+
+                    //String path_pho = images.get(0);
+                    //Uri uri_pho = getUriFromPath(path_pho);
+                    if(!string.contains("Screenshot"))
+                    {
+                        String path_pho = string;
+                        showExif(path_pho);
+                        Toast.makeText(context, images.toString(), Toast.LENGTH_SHORT).show();
+
+                        LatLng exifLatLng = new LatLng(lat, longT);
+                        Bitmap.Config conf = Bitmap.Config.ARGB_8888;
+                        Bitmap bmp = Bitmap.createBitmap(200, 200, conf);
 
 
-                Canvas canvas1 = new Canvas(bmp);
-// paint defines the text color, stroke width and size
-                Paint color = new Paint();
-                color.setTextSize(35);
-                color.setColor(Color.BLACK);
-// modify canvas
-                Bitmap resize_bmp = resizeBitmapImg(BitmapFactory.decodeFile(photoPath));
+                        Canvas canvas1 = new Canvas(bmp);
+    // paint defines the text color, stroke width and size
+                        Paint color = new Paint();
+                        color.setTextSize(35);
+                        color.setColor(Color.BLACK);
+    // modify canvas
+                        Bitmap resize_bmp = resizeBitmapImg(BitmapFactory.decodeFile(photoPath));
 
-                canvas1.drawBitmap(resize_bmp, 0,0, null);
-                mGoogleMap.addMarker(new MarkerOptions()
-                        .position(exifLatLng)
-                        .title("Hi!"))
-                        .setIcon(BitmapDescriptorFactory.fromBitmap(bmp));
-                */
+                        canvas1.drawBitmap(resize_bmp, 0, 0, null);
+                        mGoogleMap.addMarker(new MarkerOptions()
+                                .position(exifLatLng)
+                                .title("Hi!"))
+                                .setIcon(BitmapDescriptorFactory.fromBitmap(bmp));
+                    }
+                }
                 //List<LatLng> points = polyline.getPoints();
                 //points.add(exifLatLng);
                 //polyline.setPoints(points);
@@ -759,7 +787,7 @@ public class MapsActivity extends AppCompatActivity
                 // If request is cancelled, the result arrays are empty.
                 if (grandResults.length > 0
                         && grandResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    showExif(targetUri);
+                    //showExif(targetUri);
                 } else {
                     Toast.makeText(this,
                             "permission denied!",

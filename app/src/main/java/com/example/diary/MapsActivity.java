@@ -1,5 +1,6 @@
 package com.example.diary;
 
+import android.app.DatePickerDialog;
 import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
@@ -93,6 +94,7 @@ import com.nhn.android.idp.common.logger.Logger;
 
 
 import java.io.IOException;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -128,6 +130,7 @@ public class MapsActivity extends AppCompatActivity
     private LocationRequest locationRequest;
     private Location location;
 
+    private static String pick_date = null;
     private static final String TAG = "googlemap_example";
     private static final int GPS_ENABLE_REQUEST_CODE = 2001;
     private static final int UPDATE_INTERVAL_MS = 1000;  // 1초
@@ -148,28 +151,19 @@ public class MapsActivity extends AppCompatActivity
     LatLng currentPosition;
     Uri targetUri = null;
     Button buttonOpen;
+    TextView mTv;
+    Button mBtn;
+
+    Calendar c;
+    DatePickerDialog dpd;
 
 
-   public Uri getUriFromPath(String Path)
-    {
-        String fileName = Path;
-        Uri fileUri = Uri.parse(fileName);
-        String filePath = fileUri.getPath();
-        Cursor c = getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,null,"_data = '"+filePath+"'",null,null);
-
-        c.moveToNext();
-        int id = c.getInt(c.getColumnIndex("_Id"));
-        Uri uri_1 = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,id);
-
-        return uri_1;
-    }
 
     void showExif(String s_path){
 
         if(s_path != null){
 
             photoPath = s_path;
-            //photoPath = getRealPathFromURI(photoUri);
             try {
                 ExifInterface exifInterface = new ExifInterface(photoPath);
                 GeoDegree geoDegree = new GeoDegree(exifInterface);
@@ -227,6 +221,41 @@ public class MapsActivity extends AppCompatActivity
     }
     */
 
+    private ArrayList<String> getPathOfAllImages()
+    {
+        ArrayList<String> result = new ArrayList<>();
+        Uri uri = android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+        String[] projection = { MediaStore.MediaColumns.DATA, MediaStore.MediaColumns.DISPLAY_NAME };
+
+        Cursor cursor = getContentResolver().query(uri, projection, null, null, MediaStore.MediaColumns.DATE_ADDED + " desc");
+        int columnIndex = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
+        int columnDisplayname = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DISPLAY_NAME);
+
+        int lastIndex;
+        while (cursor.moveToNext())
+        {
+            String absolutePathOfImage = cursor.getString(columnIndex);
+            String nameOfFile = cursor.getString(columnDisplayname);
+            lastIndex = absolutePathOfImage.lastIndexOf(nameOfFile);
+            lastIndex = lastIndex >= 0 ? lastIndex : nameOfFile.length() - 1;
+
+            if (!TextUtils.isEmpty(absolutePathOfImage))
+            {
+                File file = new File(absolutePathOfImage);
+                Date lastModDate = new Date(file.lastModified());
+                String date_to_string = new SimpleDateFormat("yyyy-MM-dd").format(lastModDate);
+                if(date_to_string.equals(pick_date)) {
+                    result.add(absolutePathOfImage);
+                }
+            }
+        }
+
+        for (String string : result)
+        {
+            Log.i("getPathOfAllImages", "|" + string + "|");
+        }
+        return result;
+    }
 
     private View mLayout;
 
@@ -263,6 +292,34 @@ public class MapsActivity extends AppCompatActivity
         mapFragment.getMapAsync(this);
 
         //this.init();
+        mTv=(TextView)findViewById(R.id.textview);
+        mBtn =(Button) findViewById(R.id.btnPick);
+        mBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v){
+                c=Calendar.getInstance();
+                int day = c.get(Calendar.DAY_OF_MONTH);
+                int month = c.get(Calendar.MONTH);
+                int year = c.get(Calendar.YEAR);
+
+                dpd=new DatePickerDialog(context, new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker datePicker, int mYear, int mMonth, int mDay) {
+                        if (mMonth + 1 < 10)
+                            if (mDay >= 10)
+                                pick_date = (mYear + "-0" + (mMonth + 1) + "-" + mDay);
+                            else
+                                pick_date = (mYear + "-0" + (mMonth + 1) + "-0" + mDay);
+                        else if (mDay < 10)
+                            pick_date = (mYear + "-" + (mMonth + 1) + "-0" + mDay);
+                        else
+                            pick_date = (mYear+"-"+(mMonth+1)+"-"+mDay);
+                        Toast.makeText(MapsActivity.this, pick_date, Toast.LENGTH_SHORT).show();
+                    }
+                },year,month,day);
+                dpd.show();
+            }
+        });
 
     }
 
@@ -333,45 +390,11 @@ public class MapsActivity extends AppCompatActivity
         }
 
     }
-    private ArrayList<String> getPathOfAllImages()
-    {
-        ArrayList<String> result = new ArrayList<>();
-        Uri uri = android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-        String[] projection = { MediaStore.MediaColumns.DATA, MediaStore.MediaColumns.DISPLAY_NAME };
 
-        Cursor cursor = getContentResolver().query(uri, projection, null, null, MediaStore.MediaColumns.DATE_ADDED + " desc");
-        int columnIndex = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
-        int columnDisplayname = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DISPLAY_NAME);
-
-        int lastIndex;
-        while (cursor.moveToNext())
-        {
-            String absolutePathOfImage = cursor.getString(columnIndex);
-            String nameOfFile = cursor.getString(columnDisplayname);
-            lastIndex = absolutePathOfImage.lastIndexOf(nameOfFile);
-            lastIndex = lastIndex >= 0 ? lastIndex : nameOfFile.length() - 1;
-
-            if (!TextUtils.isEmpty(absolutePathOfImage))
-            {
-                File file = new File(absolutePathOfImage);
-                Date lastModDate = new Date(file.lastModified());
-                String date_to_string = new SimpleDateFormat("yyyy-MM-dd").format(lastModDate);
-                if(date_to_string.equals("2019-05-27")) {
-                    result.add(absolutePathOfImage);
-                }
-            }
-        }
-
-        for (String string : result)
-        {
-            Log.i("getPathOfAllImages", "|" + string + "|");
-        }
-        return result;
-    }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        images=getPathOfAllImages();
+        //여기
         Log.d(TAG, "onMapReady :");
 
         mGoogleMap = googleMap;
@@ -507,28 +530,22 @@ public class MapsActivity extends AppCompatActivity
                 isBtnStart = true;
                 Toast.makeText(context, "시작되었습니다", Toast.LENGTH_SHORT).show();
                 //LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
-
+                images=getPathOfAllImages();
                 for(String string : images) {
-
                     //String path_pho = images.get(0);
                     //Uri uri_pho = getUriFromPath(path_pho);
-                    if(!string.contains("Screenshot"))
+                    if(!string.contains("Screenshot") || !string.contains("KaKao"))
                     {
-                        String path_pho = string;
-                        showExif(path_pho);
+                        showExif(string);
                         Toast.makeText(context, images.toString(), Toast.LENGTH_SHORT).show();
-
                         LatLng exifLatLng = new LatLng(lat, longT);
                         Bitmap.Config conf = Bitmap.Config.ARGB_8888;
                         Bitmap bmp = Bitmap.createBitmap(200, 200, conf);
 
-
                         Canvas canvas1 = new Canvas(bmp);
-    // paint defines the text color, stroke width and size
                         Paint color = new Paint();
                         color.setTextSize(35);
                         color.setColor(Color.BLACK);
-    // modify canvas
                         Bitmap resize_bmp = resizeBitmapImg(BitmapFactory.decodeFile(photoPath));
 
                         canvas1.drawBitmap(resize_bmp, 0, 0, null);
@@ -541,7 +558,6 @@ public class MapsActivity extends AppCompatActivity
                 //List<LatLng> points = polyline.getPoints();
                 //points.add(exifLatLng);
                 //polyline.setPoints(points);
-                //%%%%%%%%%%EXIF%%%%%%%%%%%%%%
 
 
                 //polylineOptions.color(Color.RED);

@@ -37,8 +37,12 @@ import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.Dash;
+import com.google.android.gms.maps.model.Dot;
+import com.google.android.gms.maps.model.Gap;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PatternItem;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
@@ -68,6 +72,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 
@@ -90,10 +95,12 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 
 import com.google.android.gms.maps.model.Marker;
+import com.google.maps.android.SphericalUtil;
 import com.nhn.android.idp.common.logger.Logger;
 
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
@@ -111,7 +118,7 @@ public class MapsActivity extends AppCompatActivity
 
     private static final int RQS_OPEN_IMAGE = 1;
     private static final int RQS_READ_EXTERNAL_STORAGE = 2;
-    private static float lat,longT = 0;
+    private static float lat, longT = 0;
     private static String photoPath;
     public int i = 0;
     private AlertDialog dialog;
@@ -119,7 +126,7 @@ public class MapsActivity extends AppCompatActivity
     private Marker currentMarker = null;
     private PolylineOptions polylineOptions;
     private Polyline polyline;
-    //private ArrayList<LatLng> arrayPoints;
+    private ArrayList<LatLng> arrayPoints;
     private Button btn_timer_start;
     private Button btn_timer_stop;
     private Button btn_timer_reset;
@@ -130,7 +137,8 @@ public class MapsActivity extends AppCompatActivity
     private LocationRequest locationRequest;
     private Location location;
 
-    private static String pick_date = null;
+    private static String pick_date_dpt = null;
+    private static String pick_date_arr = null;
     private static final String TAG = "googlemap_example";
     private static final int GPS_ENABLE_REQUEST_CODE = 2001;
     private static final int UPDATE_INTERVAL_MS = 1000;  // 1초
@@ -145,31 +153,36 @@ public class MapsActivity extends AppCompatActivity
 
     private ArrayList<LatLng> points;
 
+    public static final int PATTERN_DASH_LENGTH_PX = 20;
+    public static final int PATTERN_GAP_LENGTH_PX = 20;
+    public static final PatternItem DOT = new Dot();
+    public static final PatternItem DASH = new Dash(PATTERN_DASH_LENGTH_PX);
+    public static final PatternItem GAP = new Gap(PATTERN_GAP_LENGTH_PX);
+    public static final List<PatternItem> PATTERN_POLYGON_ALPHA = Arrays.asList(GAP, DASH);
+
     // 앱을 실행하기 위해 필요한 퍼미션을 정의합니다.
     String[] REQUIRED_PERMISSIONS = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};  // 외부 저장소
     Location mCurrentLocatiion;
     LatLng currentPosition;
     Uri targetUri = null;
-    Button buttonOpen;
     TextView mTv;
-    Button mBtn;
-
+    Button mBtn_dpt;
+    Button mBtn_arr;
     Calendar c;
-    DatePickerDialog dpd;
+    DatePickerDialog dpd_dpt,dpd_arr;
 
 
+    void showExif(String s_path) {
 
-    void showExif(String s_path){
-
-        if(s_path != null){
+        if (s_path != null) {
 
             photoPath = s_path;
             try {
                 ExifInterface exifInterface = new ExifInterface(photoPath);
                 GeoDegree geoDegree = new GeoDegree(exifInterface);
-                 lat=geoDegree.getLatitude();
-                 longT = geoDegree.getLongitude();
-                Toast.makeText(getApplicationContext(),""+lat+"\n"+longT,Toast.LENGTH_SHORT).show();
+                lat = geoDegree.getLatitude();
+                longT = geoDegree.getLongitude();
+                Toast.makeText(getApplicationContext(), "" + lat + "\n" + longT, Toast.LENGTH_SHORT).show();
 
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
@@ -183,27 +196,28 @@ public class MapsActivity extends AppCompatActivity
                         Toast.LENGTH_LONG).show();
             }
 
-        }else{
+        } else {
             Toast.makeText(getApplicationContext(),
                     "photoUri == null",
                     Toast.LENGTH_LONG).show();
         }
     }
-    private String getRealPathFromURI(Uri uri){
+
+    private String getRealPathFromURI(Uri uri) {
         String filePath = "";
         String wholeID = DocumentsContract.getDocumentId(uri);
 
         // Split at colon, use second item in the array
         String id = wholeID.split(":")[1];
 
-        String[] column = { MediaStore.Images.Media.DATA };
+        String[] column = {MediaStore.Images.Media.DATA};
 
         // where id is equal to
         String sel = MediaStore.Images.Media._ID + "=?";
 
         Cursor cursor = getApplicationContext().getContentResolver()
                 .query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                        column, sel, new String[]{ id }, null);
+                        column, sel, new String[]{id}, null);
 
         int columnIndex = cursor.getColumnIndex(column[0]);
 
@@ -214,44 +228,40 @@ public class MapsActivity extends AppCompatActivity
         return filePath;
     }
 
-/*
+
     private void init() {
 
         arrayPoints = new ArrayList<LatLng>();
     }
-    */
 
-    private ArrayList<String> getPathOfAllImages()
-    {
+
+    private ArrayList<String> getPathOfAllImages() {
         ArrayList<String> result = new ArrayList<>();
         Uri uri = android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-        String[] projection = { MediaStore.MediaColumns.DATA, MediaStore.MediaColumns.DISPLAY_NAME };
+        String[] projection = {MediaStore.MediaColumns.DATA, MediaStore.MediaColumns.DISPLAY_NAME};
 
         Cursor cursor = getContentResolver().query(uri, projection, null, null, MediaStore.MediaColumns.DATE_ADDED + " desc");
         int columnIndex = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
         int columnDisplayname = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DISPLAY_NAME);
 
         int lastIndex;
-        while (cursor.moveToNext())
-        {
+        while (cursor.moveToNext()) {
             String absolutePathOfImage = cursor.getString(columnIndex);
             String nameOfFile = cursor.getString(columnDisplayname);
             lastIndex = absolutePathOfImage.lastIndexOf(nameOfFile);
             lastIndex = lastIndex >= 0 ? lastIndex : nameOfFile.length() - 1;
 
-            if (!TextUtils.isEmpty(absolutePathOfImage))
-            {
+            if (!TextUtils.isEmpty(absolutePathOfImage)) {
                 File file = new File(absolutePathOfImage);
                 Date lastModDate = new Date(file.lastModified());
                 String date_to_string = new SimpleDateFormat("yyyy-MM-dd").format(lastModDate);
-                if(date_to_string.equals(pick_date)) {
+                if (date_to_string.equals(pick_date_dpt)) {
                     result.add(absolutePathOfImage);
                 }
             }
         }
 
-        for (String string : result)
-        {
+        for (String string : result) {
             Log.i("getPathOfAllImages", "|" + string + "|");
         }
         return result;
@@ -291,38 +301,64 @@ public class MapsActivity extends AppCompatActivity
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        //this.init();
-        mTv=(TextView)findViewById(R.id.textview);
-        mBtn =(Button) findViewById(R.id.btnPick);
-        mBtn.setOnClickListener(new View.OnClickListener() {
+        this.init();
+        mTv = (TextView) findViewById(R.id.textview);
+        mBtn_dpt = (Button) findViewById(R.id.btnPick_dpt);
+        mBtn_arr = (Button) findViewById(R.id.btnPick_arr);
+        mBtn_dpt.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v){
-                c=Calendar.getInstance();
+            public void onClick(View v) {
+                c = Calendar.getInstance();
                 int day = c.get(Calendar.DAY_OF_MONTH);
                 int month = c.get(Calendar.MONTH);
                 int year = c.get(Calendar.YEAR);
 
-                dpd=new DatePickerDialog(context, new DatePickerDialog.OnDateSetListener() {
+                dpd_dpt = new DatePickerDialog(context, new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker datePicker, int mYear, int mMonth, int mDay) {
                         if (mMonth + 1 < 10)
                             if (mDay >= 10)
-                                pick_date = (mYear + "-0" + (mMonth + 1) + "-" + mDay);
+                                pick_date_dpt = (mYear + "-0" + (mMonth + 1) + "-" + mDay);
                             else
-                                pick_date = (mYear + "-0" + (mMonth + 1) + "-0" + mDay);
+                                pick_date_dpt= (mYear + "-0" + (mMonth + 1) + "-0" + mDay);
                         else if (mDay < 10)
-                            pick_date = (mYear + "-" + (mMonth + 1) + "-0" + mDay);
+                            pick_date_dpt = (mYear + "-" + (mMonth + 1) + "-0" + mDay);
                         else
-                            pick_date = (mYear+"-"+(mMonth+1)+"-"+mDay);
-                        Toast.makeText(MapsActivity.this, pick_date, Toast.LENGTH_SHORT).show();
+                            pick_date_dpt = (mYear + "-" + (mMonth + 1) + "-" + mDay);
+                        Toast.makeText(MapsActivity.this, pick_date_dpt, Toast.LENGTH_SHORT).show();
                     }
-                },year,month,day);
-                dpd.show();
+                }, year, month, day);
+                dpd_dpt.show();
+            }
+        });
+        mBtn_arr.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                c = Calendar.getInstance();
+                int day = c.get(Calendar.DAY_OF_MONTH);
+                int month = c.get(Calendar.MONTH);
+                int year = c.get(Calendar.YEAR);
+
+                dpd_arr = new DatePickerDialog(context, new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker datePicker, int mYear, int mMonth, int mDay) {
+                        if (mMonth + 1 < 10)
+                            if (mDay >= 10)
+                                pick_date_arr = (mYear + "-0" + (mMonth + 1) + "-" + mDay);
+                            else
+                                pick_date_arr = (mYear + "-0" + (mMonth + 1) + "-0" + mDay);
+                        else if (mDay < 10)
+                            pick_date_arr = (mYear + "-" + (mMonth + 1) + "-0" + mDay);
+                        else
+                            pick_date_arr = (mYear + "-" + (mMonth + 1) + "-" + mDay);
+                        Toast.makeText(MapsActivity.this, pick_date_arr, Toast.LENGTH_SHORT).show();
+                    }
+                }, year, month, day);
+                dpd_arr.show();
             }
         });
 
     }
-
 
 
     LocationCallback locationCallback = new LocationCallback() {
@@ -392,12 +428,14 @@ public class MapsActivity extends AppCompatActivity
     }
 
 
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
         //여기
         Log.d(TAG, "onMapReady :");
 
         mGoogleMap = googleMap;
+
         //googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
         //런타임 퍼미션 요청 대화상자나 GPS 활성 요청 대화상자 보이기전에
@@ -428,7 +466,7 @@ public class MapsActivity extends AppCompatActivity
 
                 // 3-2. 요청을 진행하기 전에 사용자가에게 퍼미션이 필요한 이유를 설명해줄 필요가 있습니다.
                 Snackbar.make(mLayout, "이 앱을 실행하려면 위치 접근 권한이 필요합니다.",
-                    Snackbar.LENGTH_INDEFINITE).setAction("확인", new View.OnClickListener() {
+                        Snackbar.LENGTH_INDEFINITE).setAction("확인", new View.OnClickListener() {
 
                     @Override
                     public void onClick(View view) {
@@ -446,7 +484,6 @@ public class MapsActivity extends AppCompatActivity
                 ActivityCompat.requestPermissions(this, REQUIRED_PERMISSIONS,
                         PERMISSIONS_REQUEST_CODE);
             }
-
 
 
         }
@@ -476,7 +513,6 @@ public class MapsActivity extends AppCompatActivity
         //polyline = mGoogleMap.addPolyline(routes);
 
 
-
         btn_timer_stop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -498,9 +534,6 @@ public class MapsActivity extends AppCompatActivity
                 mGoogleMap.clear();
             }
         });
-
-
-
 /*
         mGoogleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
@@ -530,12 +563,11 @@ public class MapsActivity extends AppCompatActivity
                 isBtnStart = true;
                 Toast.makeText(context, "시작되었습니다", Toast.LENGTH_SHORT).show();
                 //LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
-                images=getPathOfAllImages();
-                for(String string : images) {
+                images = getPathOfAllImages();
+                for (String string : images) {
                     //String path_pho = images.get(0);
                     //Uri uri_pho = getUriFromPath(path_pho);
-                    if(!string.contains("Screenshot") || !string.contains("KaKao"))
-                    {
+                    if (!string.contains("Screenshot") || !string.contains("KaKao")) {
                         showExif(string);
                         Toast.makeText(context, images.toString(), Toast.LENGTH_SHORT).show();
                         LatLng exifLatLng = new LatLng(lat, longT);
@@ -549,19 +581,22 @@ public class MapsActivity extends AppCompatActivity
                         Bitmap resize_bmp = resizeBitmapImg(BitmapFactory.decodeFile(photoPath));
 
                         canvas1.drawBitmap(resize_bmp, 0, 0, null);
-                        mGoogleMap.addMarker(new MarkerOptions()
+                        mGoogleMap.addMarker(new MarkerOptions().anchor(0, 0)
                                 .position(exifLatLng)
                                 .title("Hi!"))
                                 .setIcon(BitmapDescriptorFactory.fromBitmap(bmp));
+                        polylineOptions = new PolylineOptions();
+                        polylineOptions.color(Color.rgb(255, 113, 181));
+                        polylineOptions.width(10);
+                        polylineOptions.pattern(PATTERN_POLYGON_ALPHA);
+                        arrayPoints.add(exifLatLng);
+                        polylineOptions.addAll(arrayPoints);
+                        mGoogleMap.addPolyline(polylineOptions);
+
                     }
                 }
-                //List<LatLng> points = polyline.getPoints();
-                //points.add(exifLatLng);
-                //polyline.setPoints(points);
 
 
-                //polylineOptions.color(Color.RED);
-                //polylineOptions.width(5);
                 //polylineOptions.add(currentPosition,myLatLng);
                 //mGoogleMap.addPolyline(polylineOptions);
                 //currentPosition=myLatLng;
@@ -573,8 +608,7 @@ public class MapsActivity extends AppCompatActivity
 
         });
 
-        }
-
+    }
 
 
     @Override
@@ -608,7 +642,6 @@ public class MapsActivity extends AppCompatActivity
         }
         return result;
     }
-
 
 
     @Override
@@ -674,7 +707,6 @@ public class MapsActivity extends AppCompatActivity
         //if (currentMarker != null) currentMarker.remove();
 
 
-
         LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
 
        /* MarkerOptions markerOptions = new MarkerOptions();
@@ -685,7 +717,7 @@ public class MapsActivity extends AppCompatActivity
 
 
         currentMarker = mGoogleMap.addMarker(markerOptions);*/
-        if(flag != 1) {
+        if (flag != 1) {
             CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLng(currentLatLng);
             mGoogleMap.moveCamera(cameraUpdate);
             flag = 1;
@@ -874,6 +906,7 @@ public class MapsActivity extends AppCompatActivity
                 break;
         }
     }
+
     private boolean CheckPermission_READ_EXTERNAL_STORAGE() {
         // return true: have permission
         // return false: no permission
@@ -884,7 +917,7 @@ public class MapsActivity extends AppCompatActivity
                     new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
                     RQS_READ_EXTERNAL_STORAGE);
             return false;
-        }else{
+        } else {
             return true;
         }
     }

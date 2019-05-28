@@ -3,24 +3,70 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal"
     android:id="@+id/layout_maps"
-    tools:context=".MainActivity" >
+    tools:context=".MainActivity">
+
     <fragment
         android:id="@+id/map"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         class="com.google.android.gms.maps.MapFragment" />
 
-    <Button
-        android:id="@+id/btnPick"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Pick Date" />
-    <TextView
+    <EditText
+        android:id="@+id/textview"
+        android:layout_width="match_parent"
+        android:layout_height="15dp"
+        android:textColor="@color/grayLight"
+        android:fontFamily="@font/comic"
+        android:hint="지역명 쓰거라"
+        android:textSize="13dp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:background="@color/colorAccent" />
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/textview"/>
+        android:gravity="center"
+        android:layout_marginTop="30dp"
+        android:orientation="horizontal"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true">
+    <Button
+        android:id="@+id/btnPick_dpt"
+        android:layout_width="75dp"
+        android:layout_height="33dp"
+        android:layout_marginRight="10dp"
+        android:fontFamily="@font/comic"
+        android:textStyle="bold"
+        android:background="@color/colorAccent"
+        android:textColor="@color/grayLight"
+        android:text="Depart" />
+        <Button
+            android:id="@+id/btnPick_arr"
+            android:fontFamily="@font/comic"
+            android:layout_width="75dp"
+            android:layout_height="33dp"
+            android:layout_marginRight="10dp"
+            android:textStyle="bold"
+            android:background="@color/colorAccent"
+            android:textColor="@color/grayLight"
+            android:text="Arrive" />
+        <Button
+            android:id="@+id/saveButton_map"
+            android:fontFamily="@font/comic"
+            android:background="@color/colorAccent"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginRight="10dp"
+            android:layout_width="75dp"
+            android:layout_height="33dp"
+            android:text="SAVE"
+            android:textColor="@color/grayLight"
+            android:textStyle="bold"
+            />
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/fragment_map2_LL_1"
@@ -31,37 +77,39 @@
         android:orientation="horizontal"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true">
+
         <Button
             android:id="@+id/btn_timer_start"
             android:fontFamily="@font/comic"
             android:textStyle="bold"
-            android:layout_width="80dp"
-            android:layout_height="40dp"
             android:layout_marginRight="10dp"
+            android:layout_width="75dp"
+            android:layout_height="33dp"
             android:background="@color/colorAccent"
-            android:text="Start" />
+            android:textColor="@color/grayLight"
+            android:text="START" />
 
         <Button
             android:id="@+id/btn_timer_finish"
             android:fontFamily="@font/comic"
             android:textStyle="bold"
-            android:layout_width="80dp"
-            android:layout_height="40dp"
-            android:layout_marginRight="10dp"
+            android:layout_width="75dp"
+            android:layout_height="33dp"
             android:background="@color/colorAccent"
+            android:textColor="@color/grayLight"
+            android:layout_marginRight="10dp"
             android:text="Stop" />
 
         <Button
             android:id="@+id/btn_timer_reset"
             android:fontFamily="@font/comic"
             android:textStyle="bold"
-            android:layout_width="80dp"
-            android:layout_height="40dp"
-            android:layout_marginRight="10dp"
+            android:layout_width="75dp"
+            android:layout_height="33dp"
             android:background="@color/colorAccent"
-            android:text="Reset" />
+            android:textColor="@color/grayLight"
+            android:layout_marginRight="10dp"
+            android:text="Reset"/>
+
     </LinearLayout>
-
-
-
 </RelativeLayout>

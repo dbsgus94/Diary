@@ -7,6 +7,23 @@
     android:orientation="vertical"
     tools:context=".ImageGridActivity">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorAccent"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:fontFamily="@font/comic"
+            android:text="2019년 05월 28일 충무로"
+            android:textColor="#fafafa"
+            android:textSize="20dp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
     <GridView
         android:id="@+id/gridViewImages"
         android:layout_width="match_parent"

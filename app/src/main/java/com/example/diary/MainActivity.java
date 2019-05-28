@@ -40,8 +40,7 @@ public class MainActivity extends AppCompatActivity {
         meButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                card1.setBackgroundColor(getResources().getColor(R.color.colorGray));
-
+                //card1.setBackgroundColor(getResources().getColor(R.color.endPink));
                 Intent intent=getIntent();
                 String userID = intent.getExtras().getString("id_value");;
 
@@ -54,7 +53,6 @@ public class MainActivity extends AppCompatActivity {
         diaryButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
                 dialog = builder.setMessage("카메라 -> 설정 -> 위치태그 허용").setPositiveButton("확인",null).create();
                 dialog.show();
@@ -67,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
                         Intent diaryButtonintent = new Intent(MainActivity.this, MapsActivity.class);
                         MainActivity.this.startActivity(diaryButtonintent);
                     }
-                },100);
+                },10);
 
 
 
@@ -80,8 +78,6 @@ public class MainActivity extends AppCompatActivity {
                 MainActivity.this.startActivity(galleryButtonIntent);
             }
         });
-
-
     }
     private void checkPermission() {
 

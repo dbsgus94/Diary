@@ -17,7 +17,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="200dp"
-            android:background="@drawable/gradientbackground"
+            android:background="@color/colorAccent"
             android:orientation="vertical">
 
             <ImageView
@@ -51,11 +51,11 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="50dp"
-                android:background="@drawable/gradientbackground"
+                android:background="@color/colorAccent"
                 android:drawableStart="@drawable/login_ic_person_black_24dp"
                 android:drawableLeft="@drawable/login_ic_person_black_24dp"
                 android:fontFamily="@font/comic"
-                android:hint="아이디"
+                android:hint="ID"
                 android:padding="10dp"
                 android:textColor="#fafafa"
                 android:textColorHint="#fafafa" />
@@ -66,11 +66,11 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="10dp"
-                android:background="@drawable/gradientbackground"
+                android:background="@color/colorAccent"
                 android:drawableStart="@drawable/ic_https_black_24dp"
                 android:drawableLeft="@drawable/ic_https_black_24dp"
                 android:fontFamily="@font/comic"
-                android:hint="비밀번호"
+                android:hint="Password"
                 android:inputType="textPassword"
                 android:padding="10dp"
                 android:textColor="#fafafa"
@@ -82,9 +82,9 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="10dp"
-                android:background="@drawable/gradientbackground"
+                android:background="@color/colorAccent"
                 android:fontFamily="@font/comic"
-                android:text="로그인"
+                android:text="Login"
                 android:textColor="#fafafa"
                 android:textSize="20dp"
                 android:textStyle="bold" />
@@ -96,7 +96,7 @@
                 android:layout_gravity="center"
                 android:layout_marginTop="30dp"
                 android:fontFamily="@font/comic"
-                android:text="회원가입"
+                android:text="Sign Up"
                 android:textSize="18dp" />
 
             <LinearLayout

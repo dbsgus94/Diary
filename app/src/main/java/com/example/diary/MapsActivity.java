@@ -1,7 +1,5 @@
 package com.example.diary;
-
 import android.app.DatePickerDialog;
-import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -9,44 +7,28 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.drawable.Drawable;
-import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
-
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.sql.Date;
+import java.text.DateFormat;
+import java.util.Date;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-
-import android.graphics.Color;
-import android.os.Bundle;
-import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
-import android.support.annotation.DrawableRes;
-import android.support.v4.app.FragmentActivity;
-
-import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
-import com.google.android.gms.maps.GoogleMap.OnMapLongClickListener;
 import com.google.android.gms.maps.MapsInitializer;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Dash;
 import com.google.android.gms.maps.model.Dot;
 import com.google.android.gms.maps.model.Gap;
-import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PatternItem;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
-
-
 import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -62,26 +44,14 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-
 import android.text.TextUtils;
-import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.DatePicker;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
-
-
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
-
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -89,36 +59,23 @@ import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.maps.CameraUpdate;
-
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-
 import com.google.android.gms.maps.model.Marker;
-import com.google.maps.android.SphericalUtil;
-import com.nhn.android.idp.common.logger.Logger;
-
-
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
-
 import android.app.Activity;
 import android.support.media.ExifInterface;
-import android.os.Environment;
 import android.widget.TextView;
-
-//import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MapsActivity extends AppCompatActivity
         implements OnMapReadyCallback, ActivityCompat.OnRequestPermissionsResultCallback {
 
     private static final int RQS_OPEN_IMAGE = 1;
     private static final int RQS_READ_EXTERNAL_STORAGE = 2;
-    private static float lat, longT = 0;
     private static String photoPath;
     public int i = 0;
     private AlertDialog dialog;
@@ -132,11 +89,9 @@ public class MapsActivity extends AppCompatActivity
     private Button btn_timer_reset;
     public static Context context;
     private boolean isBtnStart = false;
-
     private FusedLocationProviderClient mFusedLocationClient;
     private LocationRequest locationRequest;
     private Location location;
-
     private static String pick_date_dpt = null;
     private static String pick_date_arr = null;
     private static final String TAG = "googlemap_example";
@@ -172,17 +127,16 @@ public class MapsActivity extends AppCompatActivity
     DatePickerDialog dpd_dpt,dpd_arr;
 
 
-    void showExif(String s_path) {
-
+    float[] showExif(String s_path) {
+        float lat_long[] = {0,0};
         if (s_path != null) {
-
             photoPath = s_path;
             try {
                 ExifInterface exifInterface = new ExifInterface(photoPath);
                 GeoDegree geoDegree = new GeoDegree(exifInterface);
-                lat = geoDegree.getLatitude();
-                longT = geoDegree.getLongitude();
-                Toast.makeText(getApplicationContext(), "" + lat + "\n" + longT, Toast.LENGTH_SHORT).show();
+                lat_long[0] = geoDegree.getLatitude();
+                lat_long[1] = geoDegree.getLongitude();
+                //Toast.makeText(getApplicationContext(), "" + lat + "\n" + longT, Toast.LENGTH_SHORT).show();
 
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
@@ -194,6 +148,11 @@ public class MapsActivity extends AppCompatActivity
                 Toast.makeText(getApplicationContext(),
                         "Something wrong:\n" + e.toString(),
                         Toast.LENGTH_LONG).show();
+            }catch (NullPointerException e) {
+                e.printStackTrace();
+                //Toast.makeText(getApplicationContext(),
+                //        "Something wrong:\n" + e.toString(),
+                //        Toast.LENGTH_LONG).show();
             }
 
         } else {
@@ -201,6 +160,7 @@ public class MapsActivity extends AppCompatActivity
                     "photoUri == null",
                     Toast.LENGTH_LONG).show();
         }
+        return lat_long;
     }
 
     private String getRealPathFromURI(Uri uri) {
@@ -235,7 +195,7 @@ public class MapsActivity extends AppCompatActivity
     }
 
 
-    private ArrayList<String> getPathOfAllImages() {
+    private ArrayList<String> getPathOfAllImages(String t_date) {
         ArrayList<String> result = new ArrayList<>();
         Uri uri = android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
         String[] projection = {MediaStore.MediaColumns.DATA, MediaStore.MediaColumns.DISPLAY_NAME};
@@ -250,12 +210,11 @@ public class MapsActivity extends AppCompatActivity
             String nameOfFile = cursor.getString(columnDisplayname);
             lastIndex = absolutePathOfImage.lastIndexOf(nameOfFile);
             lastIndex = lastIndex >= 0 ? lastIndex : nameOfFile.length() - 1;
-
             if (!TextUtils.isEmpty(absolutePathOfImage)) {
                 File file = new File(absolutePathOfImage);
                 Date lastModDate = new Date(file.lastModified());
                 String date_to_string = new SimpleDateFormat("yyyy-MM-dd").format(lastModDate);
-                if (date_to_string.equals(pick_date_dpt)) {
+                if (date_to_string.equals(t_date)) {
                     result.add(absolutePathOfImage);
                 }
             }
@@ -426,6 +385,24 @@ public class MapsActivity extends AppCompatActivity
         }
 
     }
+    public int doDiffOfDate(String start, String end){
+        int temp =0;
+        try {
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd",Locale.KOREA);
+            Date beginDate = (Date) formatter.parse(start);
+            Date endDate = (Date) formatter.parse(end);
+
+            // 시간차이를 시간,분,초를 곱한 값으로 나누면 하루 단위가 나옴
+            long diff = endDate.getTime() - beginDate.getTime();
+            long diffDays = diff / (24 * 60 * 60 * 1000);
+            temp = (int) diffDays;
+
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return temp;
+    }
 
 
 
@@ -454,8 +431,6 @@ public class MapsActivity extends AppCompatActivity
 
             // 2. 이미 퍼미션을 가지고 있다면
             // ( 안드로이드 6.0 이하 버전은 런타임 퍼미션이 필요없기 때문에 이미 허용된 걸로 인식합니다.)
-
-
             startLocationUpdates(); // 3. 위치 업데이트 시작
 
 
@@ -494,24 +469,6 @@ public class MapsActivity extends AppCompatActivity
         btn_timer_start = (Button) findViewById(R.id.btn_timer_start);
         btn_timer_stop = (Button) findViewById(R.id.btn_timer_finish);
         btn_timer_reset = (Button) findViewById(R.id.btn_timer_reset);
-        //buttonOpen = (Button) findViewById(R.id.opendocument);
-       /* buttonOpen.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent();
-                intent.setAction(Intent.ACTION_OPEN_DOCUMENT);
-                intent.addCategory(Intent.CATEGORY_OPENABLE);
-                intent.setType("image/jpeg");
-                startActivityForResult(intent, RQS_OPEN_IMAGE);
-
-            }
-        });*/
-
-        //MarkerOptions markerOptions = new MarkerOptions();
-        //PolylineOptions routes = new PolylineOptions().width(5).color(Color.BLUE);
-        //polyline = mGoogleMap.addPolyline(routes);
-
 
         btn_timer_stop.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -534,24 +491,7 @@ public class MapsActivity extends AppCompatActivity
                 mGoogleMap.clear();
             }
         });
-/*
-        mGoogleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-            @Override
-            public void onMapClick(LatLng latLng) {
-                if(isBtnStart){
-                    MarkerOptions marker = new MarkerOptions();
-                    marker.position(latLng);
-                    mGoogleMap.addMarker(marker);
-                    polylineOptions = new PolylineOptions();
-                    polylineOptions.color(Color.RED);
-                    polylineOptions.width(5);
-                    arrayPoints.add(latLng);
-                    polylineOptions.addAll(arrayPoints);
-                    mGoogleMap.addPolyline(polylineOptions);
-                }
-            }
-        });
-        */
+
         btn_timer_start.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -563,52 +503,74 @@ public class MapsActivity extends AppCompatActivity
                 isBtnStart = true;
                 Toast.makeText(context, "시작되었습니다", Toast.LENGTH_SHORT).show();
                 //LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
-                images = getPathOfAllImages();
-                for (String string : images) {
-                    //String path_pho = images.get(0);
-                    //Uri uri_pho = getUriFromPath(path_pho);
-                    if (!string.contains("Screenshot") || !string.contains("KaKao")) {
-                        showExif(string);
-                        Toast.makeText(context, images.toString(), Toast.LENGTH_SHORT).show();
-                        LatLng exifLatLng = new LatLng(lat, longT);
-                        Bitmap.Config conf = Bitmap.Config.ARGB_8888;
-                        Bitmap bmp = Bitmap.createBitmap(200, 200, conf);
 
-                        Canvas canvas1 = new Canvas(bmp);
-                        Paint color = new Paint();
-                        color.setTextSize(35);
-                        color.setColor(Color.BLACK);
-                        Bitmap resize_bmp = resizeBitmapImg(BitmapFactory.decodeFile(photoPath));
+                int diffDays = doDiffOfDate(pick_date_dpt, pick_date_arr);
+                //Toast.makeText(MapsActivity.this, ""+diffDays, Toast.LENGTH_SHORT).show();
 
-                        canvas1.drawBitmap(resize_bmp, 0, 0, null);
-                        mGoogleMap.addMarker(new MarkerOptions().anchor(0, 0)
-                                .position(exifLatLng)
-                                .title("Hi!"))
-                                .setIcon(BitmapDescriptorFactory.fromBitmap(bmp));
-                        polylineOptions = new PolylineOptions();
-                        polylineOptions.color(Color.rgb(255, 113, 181));
-                        polylineOptions.width(10);
-                        polylineOptions.pattern(PATTERN_POLYGON_ALPHA);
-                        arrayPoints.add(exifLatLng);
-                        polylineOptions.addAll(arrayPoints);
-                        mGoogleMap.addPolyline(polylineOptions);
 
+                for (int i = 0; i <= diffDays; i++) {
+                    String loop_date = null;
+                    if (i == 0) {
+                        loop_date = pick_date_dpt;
+                    } else if (i == diffDays)
+                        loop_date = pick_date_arr;
+                    else {
+
+                        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd",Locale.KOREA);
+                        Date date_d = null;
+
+                        try{
+                            date_d = dateFormat.parse(pick_date_dpt);
+                        }
+                        catch (ParseException e)
+                        {
+                            e.printStackTrace();
+                        }
+                        Calendar cal= Calendar.getInstance();
+                        cal.setTime(date_d);
+                        cal.add(Calendar.DATE,i);
+                        loop_date = dateFormat.format(cal.getTime());
+
+                        }
+                    float[] out_latlong;
+                    images = getPathOfAllImages(loop_date);
+                    for (String string : images) {
+                        //String path_pho = images.get(0);
+                        //Uri uri_pho = getUriFromPath(path_pho);
+                        out_latlong = showExif(string);
+                        if (out_latlong[0] != 0 && out_latlong[1] != 0) {
+                            //Toast.makeText(context, images.toString(), Toast.LENGTH_SHORT).show();
+                            LatLng exifLatLng = new LatLng(out_latlong[0],out_latlong[1]);
+                            Bitmap.Config conf = Bitmap.Config.ARGB_8888;
+                            Bitmap bmp = Bitmap.createBitmap(200, 200, conf);
+
+                            Canvas canvas1 = new Canvas(bmp);
+                            Paint color = new Paint();
+                            color.setTextSize(35);
+                            color.setColor(Color.BLACK);
+                            Bitmap resize_bmp = resizeBitmapImg(BitmapFactory.decodeFile(photoPath));
+
+                            canvas1.drawBitmap(resize_bmp, 0, 0, null);
+                            mGoogleMap.addMarker(new MarkerOptions().anchor(0, 0)
+                                    .position(exifLatLng)
+                                    .title("Hi!"))
+                                    .setIcon(BitmapDescriptorFactory.fromBitmap(bmp));
+                            polylineOptions = new PolylineOptions();
+                            polylineOptions.color(Color.rgb(255, 113, 181));
+                            polylineOptions.width(10);
+                            polylineOptions.pattern(PATTERN_POLYGON_ALPHA);
+                            arrayPoints.add(exifLatLng);
+                            polylineOptions.addAll(arrayPoints);
+                            mGoogleMap.addPolyline(polylineOptions);
+
+                        }
                     }
                 }
-
-
-                //polylineOptions.add(currentPosition,myLatLng);
-                //mGoogleMap.addPolyline(polylineOptions);
-                //currentPosition=myLatLng;
-                //arrayPoints.add(currentLatLng,myLatLng);
-                //polylineOptions.addAll(arrayPoints);
-                //mGoogleMap.addPolyline(polylineOptions);
-
             }
-
         });
 
     }
+
 
 
     @Override
@@ -624,10 +586,7 @@ public class MapsActivity extends AppCompatActivity
 
             if (mGoogleMap != null)
                 mGoogleMap.setMyLocationEnabled(true);
-
         }
-
-
     }
 
     static public Bitmap resizeBitmapImg(Bitmap original) {
@@ -677,19 +636,15 @@ public class MapsActivity extends AppCompatActivity
         } catch (IllegalArgumentException illegalArgumentException) {
             Toast.makeText(this, "잘못된 GPS 좌표", Toast.LENGTH_LONG).show();
             return "잘못된 GPS 좌표";
-
         }
-
 
         if (addresses == null || addresses.size() == 0) {
             Toast.makeText(this, "주소 미발견", Toast.LENGTH_LONG).show();
             return "주소 미발견";
-
         } else {
             Address address = addresses.get(0);
             return address.getAddressLine(0).toString();
         }
-
     }
 
 
@@ -703,53 +658,25 @@ public class MapsActivity extends AppCompatActivity
 
     public void setCurrentLocation(Location location, String markerTitle, String markerSnippet) {
 
-
-        //if (currentMarker != null) currentMarker.remove();
-
-
         LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
-
-       /* MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions.position(currentLatLng);
-        markerOptions.title(markerTitle);
-        markerOptions.snippet(markerSnippet);
-        markerOptions.draggable(true);
-
-
-        currentMarker = mGoogleMap.addMarker(markerOptions);*/
         if (flag != 1) {
             CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLng(currentLatLng);
             mGoogleMap.moveCamera(cameraUpdate);
             flag = 1;
         }
-
     }
 
-
     public void setDefaultLocation() {
-
 
         //디폴트 위치, Seoul
         LatLng DEFAULT_LOCATION = new LatLng(37.56, 126.97);
         String markerTitle = "위치정보 가져올 수 없음";
         String markerSnippet = "위치 퍼미션과 GPS 활성 여부 확인하세요";
-
-
         if (currentMarker != null) currentMarker.remove();
-
-       /* MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions.position(DEFAULT_LOCATION);
-        markerOptions.title(markerTitle);
-        markerOptions.snippet(markerSnippet);
-        markerOptions.draggable(true);
-        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
-        currentMarker = mGoogleMap.addMarker(markerOptions);*/
-
         CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(DEFAULT_LOCATION, 15);
         mGoogleMap.moveCamera(cameraUpdate);
 
     }
-
 
     //여기부터는 런타임 퍼미션 처리을 위한 메소드들
     private boolean checkPermission() {
@@ -758,20 +685,15 @@ public class MapsActivity extends AppCompatActivity
         int hasCoarseLocationPermission = ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_COARSE_LOCATION);
 
-
         if (hasFineLocationPermission == PackageManager.PERMISSION_GRANTED &&
                 hasCoarseLocationPermission == PackageManager.PERMISSION_GRANTED) {
             return true;
         }
-
         return false;
 
     }
 
-
-    /*
-     * ActivityCompat.requestPermissions를 사용한 퍼미션 요청의 결과를 리턴받는 메소드입니다.
-     */
+     //* ActivityCompat.requestPermissions를 사용한 퍼미션 요청의 결과를 리턴받는 메소드입니다.
     @Override
     public void onRequestPermissionsResult(int permsRequestCode,
                                            @NonNull String[] permissions,
@@ -782,8 +704,6 @@ public class MapsActivity extends AppCompatActivity
             // 요청 코드가 PERMISSIONS_REQUEST_CODE 이고, 요청한 퍼미션 개수만큼 수신되었다면
 
             boolean check_result = true;
-
-
             // 모든 퍼미션을 허용했는지 체크합니다.
 
             for (int result : grandResults) {
@@ -792,8 +712,6 @@ public class MapsActivity extends AppCompatActivity
                     break;
                 }
             }
-
-
             if (check_result) {
 
                 // 퍼미션을 허용했다면 위치 업데이트를 시작합니다.
@@ -829,7 +747,6 @@ public class MapsActivity extends AppCompatActivity
             }
 
         }
-
         switch (permsRequestCode) {
             case RQS_READ_EXTERNAL_STORAGE: {
                 // If request is cancelled, the result arrays are empty.
@@ -845,7 +762,6 @@ public class MapsActivity extends AppCompatActivity
         }
 
     }
-
 
     //여기부터는 GPS 활성화를 위한 메소드들
     private void showDialogForLocationServiceSetting() {

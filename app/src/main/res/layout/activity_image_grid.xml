@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".ImageGridActivity">
 
@@ -24,15 +25,62 @@
             android:textStyle="bold" />
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal"
+        >
+
+        <Button
+            android:id="@+id/btnStartRecord"
+            android:fontFamily="@font/comic"
+            android:textStyle="bold"
+            android:layout_width="75dp"
+            android:layout_height="33dp"
+            android:background="@color/colorAccent"
+            android:textColor="@color/grayLight"
+            android:text="RECORD" />
+
+        <Button
+            android:id="@+id/btnStopRecord"
+            android:fontFamily="@font/comic"
+            android:textStyle="bold"
+            android:layout_width="70dp"
+            android:layout_height="33dp"
+            android:background="@color/colorAccent"
+            android:textColor="@color/grayLight"
+            android:text="END" />
+
+        <Button
+            android:id="@+id/btnplay"
+            android:fontFamily="@font/comic"
+            android:textStyle="bold"
+            android:layout_width="70dp"
+            android:layout_height="33dp"
+            android:background="@color/colorAccent"
+            android:textColor="@color/grayLight"
+            android:text="PLAY" />
+
+        <Button
+            android:id="@+id/btnSTOP"
+            android:fontFamily="@font/comic"
+            android:textStyle="bold"
+            android:layout_width="70dp"
+            android:layout_height="33dp"
+            android:background="@color/colorAccent"
+            android:textColor="@color/grayLight"
+            android:text="STOP" />
+    </LinearLayout>
+
     <GridView
         android:id="@+id/gridViewImages"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:numColumns="3"
+        android:layout_height="566dp"
         android:horizontalSpacing="10dp"
-        android:verticalSpacing="10dp"
+        android:numColumns="3"
         android:paddingTop="10dp"
-        android:paddingBottom="10dp">
-    </GridView>
+        android:paddingBottom="10dp"
+        android:verticalSpacing="10dp"></GridView>
 
 </LinearLayout>

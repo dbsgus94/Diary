@@ -99,6 +99,7 @@ public class MapsActivity extends AppCompatActivity
     private static final int UPDATE_INTERVAL_MS = 1000;  // 1초
     private static final int FASTEST_UPDATE_INTERVAL_MS = 500; // 0.5초
     private static int flag = 0;
+    private static ArrayList<String[]> image_info =new ArrayList<String[]>(); //image_info[0] = 사진주소 image_info[1] = lat image_info[2] = longT image_info[3] = date
     private ArrayList<String> images;
 
 
@@ -216,6 +217,7 @@ public class MapsActivity extends AppCompatActivity
                 String date_to_string = new SimpleDateFormat("yyyy-MM-dd").format(lastModDate);
                 if (date_to_string.equals(t_date)) {
                     result.add(absolutePathOfImage);
+
                 }
             }
         }
@@ -346,8 +348,6 @@ public class MapsActivity extends AppCompatActivity
 
                 mCurrentLocatiion = location;
             }
-
-
         }
 
     };
@@ -503,7 +503,7 @@ public class MapsActivity extends AppCompatActivity
                 isBtnStart = true;
                 Toast.makeText(context, "시작되었습니다", Toast.LENGTH_SHORT).show();
                 //LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
-
+                image_info.clear();
                 int diffDays = doDiffOfDate(pick_date_dpt, pick_date_arr);
                 //Toast.makeText(MapsActivity.this, ""+diffDays, Toast.LENGTH_SHORT).show();
 
@@ -539,17 +539,16 @@ public class MapsActivity extends AppCompatActivity
                         //Uri uri_pho = getUriFromPath(path_pho);
                         out_latlong = showExif(string);
                         if (out_latlong[0] != 0 && out_latlong[1] != 0) {
+                            image_info.add(new String[]{string,Float.toString(out_latlong[0]), Float.toString(out_latlong[1]), loop_date});
                             //Toast.makeText(context, images.toString(), Toast.LENGTH_SHORT).show();
                             LatLng exifLatLng = new LatLng(out_latlong[0],out_latlong[1]);
                             Bitmap.Config conf = Bitmap.Config.ARGB_8888;
                             Bitmap bmp = Bitmap.createBitmap(200, 200, conf);
-
                             Canvas canvas1 = new Canvas(bmp);
                             Paint color = new Paint();
                             color.setTextSize(35);
                             color.setColor(Color.BLACK);
                             Bitmap resize_bmp = resizeBitmapImg(BitmapFactory.decodeFile(photoPath));
-
                             canvas1.drawBitmap(resize_bmp, 0, 0, null);
                             mGoogleMap.addMarker(new MarkerOptions().anchor(0, 0)
                                     .position(exifLatLng)
@@ -562,10 +561,12 @@ public class MapsActivity extends AppCompatActivity
                             arrayPoints.add(exifLatLng);
                             polylineOptions.addAll(arrayPoints);
                             mGoogleMap.addPolyline(polylineOptions);
-
-                        }
+                            }
                     }
                 }
+                Intent intent = new Intent(MapsActivity.this,ImageGridActivity.class);
+                intent.putExtra("image_info", image_info);
+                MapsActivity.this.startActivity(intent);
             }
         });
 

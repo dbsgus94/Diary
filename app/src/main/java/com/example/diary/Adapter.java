@@ -1,6 +1,8 @@
 package com.example.diary;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.v4.view.PagerAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,25 +17,15 @@ public class Adapter extends PagerAdapter
 {
     PhotoViewAttacher mAttcher;
 
-    private int [] imageIDs = new int [] {
-            R.drawable.gallery_image_01,
-            R.drawable.gallery_image_02,
-            R.drawable.gallery_image_03,
-            R.drawable.gallery_image_04,
-            R.drawable.gallery_image_05,
-            R.drawable.gallery_image_06,
-            R.drawable.gallery_image_07,
-            R.drawable.gallery_image_08,
-            R.drawable.gallery_image_09,
-            R.drawable.gallery_image_10,
-    };
     private LayoutInflater inflater;
     private Context context;
+    private String[] imageIDs;
 
 
-    public Adapter(Context context)
+    public Adapter(Context context,String[] imageIDs)
     {
         this.context=context;
+        this.imageIDs =imageIDs;
     }
     @Override
     public int getCount()
@@ -55,7 +47,12 @@ public class Adapter extends PagerAdapter
         ImageView imageView =(ImageView) v.findViewById(R.id.imageView);
         mAttcher=new PhotoViewAttacher(imageView);
         EditText edittext= (EditText) v.findViewById(R.id.edittext);
-        imageView.setImageResource(imageIDs[position]);
+
+
+        Bitmap bmp = BitmapFactory.decodeFile(imageIDs[position]);
+        //bmp = Bitmap.createScaledBitmap(bmp,320,240,false);
+        imageView.setImageBitmap(bmp);
+
         container.addView(v);
         return v;
 

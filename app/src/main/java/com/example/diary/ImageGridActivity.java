@@ -22,19 +22,8 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 public class ImageGridActivity extends AppCompatActivity {
-    private int [] imageIDs = new int [] {
-            R.drawable.gallery_image_01,
-            R.drawable.gallery_image_02,
-            R.drawable.gallery_image_03,
-            R.drawable.gallery_image_04,
-            R.drawable.gallery_image_05,
-            R.drawable.gallery_image_06,
-            R.drawable.gallery_image_07,
-            R.drawable.gallery_image_08,
-            R.drawable.gallery_image_09,
-            R.drawable.gallery_image_10,
-    };
-    private ArrayList<String> image_info = new ArrayList<String>();
+    private static ArrayList<String> image_info = new ArrayList<String>();
+    private static String[] imageIDs;
     String pathSave = "";
     MediaRecorder mediaRecorder;
     MediaPlayer mediaPlayer;
@@ -46,6 +35,18 @@ public class ImageGridActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        image_info = getIntent().getStringArrayListExtra("image_info");
+        int al_size = image_info.size();
+        imageIDs = new String[al_size];
+
+        for(int i=0;i<al_size;i++)
+        {
+            String info_img = image_info.get(i);
+            String temp[] = info_img.split(":");
+            imageIDs[i] = temp[0];
+        }
+
         setContentView(R.layout.activity_image_grid);
         GridView gridViewImages = (GridView)findViewById(R.id.gridViewImages);
         ImageGridAdapter imageGridAdapter = new ImageGridAdapter(this,imageIDs);
@@ -55,7 +56,6 @@ public class ImageGridActivity extends AppCompatActivity {
         btnStop =(Button)findViewById(R.id.btnSTOP);
         btnStopRecord = (Button)findViewById(R.id.btnStopRecord);
 
-        image_info = getIntent().getStringArrayListExtra("image_info");
 
         if (!checkPermissionFromDevice()) {
             requestPermission();

@@ -15,15 +15,17 @@ public class ImageActivity extends AppCompatActivity{
 
     ViewPager viewPager;
     Adapter adapter;
+    String[] imageIDs;
+
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-
+        imageIDs = getIntent().getExtras().getStringArray("image ID");
         viewPager=(ViewPager)findViewById(R.id.vvv);
-        adapter=new Adapter(this);
+        adapter=new Adapter(this, imageIDs);
         viewPager.setAdapter(adapter);
 
 

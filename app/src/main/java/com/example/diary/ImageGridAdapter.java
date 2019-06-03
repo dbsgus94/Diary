@@ -15,10 +15,10 @@ public class ImageGridAdapter extends BaseAdapter {
 
     Context context;
 
-    int [] imageIDs;
+    String [] imageIDs;
 
 
-    public ImageGridAdapter(Context context, int[] imageIDs) {
+    public ImageGridAdapter(Context context, String[] imageIDs) {
         this.context = context;
         this.imageIDs = imageIDs;
     }
@@ -27,11 +27,9 @@ public class ImageGridAdapter extends BaseAdapter {
 
     }
 
-
     public Object getItem(int position) {
         return (null != imageIDs) ? imageIDs[position]:0;
     }
-
     public long getItemId(int position) {
         return position;
     }
@@ -41,16 +39,14 @@ public class ImageGridAdapter extends BaseAdapter {
         if(null != convertView)
             imageView = (ImageView)convertView;
         else {
-            Bitmap bmp = BitmapFactory.decodeResource(context.getResources(),imageIDs[position]);
-            bmp = Bitmap.createScaledBitmap(bmp,320,240,false);
+            Bitmap bmp = BitmapFactory.decodeFile(imageIDs[position]);
+            //bmp = Bitmap.createScaledBitmap(bmp,320,240,false);
             imageView = new ImageView(context);
             imageView.setAdjustViewBounds(true);
             imageView.setImageBitmap(bmp);
-            ImageClickListener imageViewClickListener = new ImageClickListener(context, imageIDs[position]);
+            ImageClickListener imageViewClickListener = new ImageClickListener(context, imageIDs);
             imageView.setOnClickListener(imageViewClickListener);
-
         }
         return imageView;
     }
-
 }

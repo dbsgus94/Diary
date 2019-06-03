@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 //card1.setBackgroundColor(getResources().getColor(R.color.endPink));
                 Intent intent=getIntent();
-                String userID = intent.getExtras().getString("id_value");;
+                String userID = intent.getExtras().getString("id_value");
 
                 Intent meButtonintent = new Intent(MainActivity.this, MeActivity.class);
                 meButtonintent.putExtra("id_value",userID);

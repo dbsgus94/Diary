@@ -73,7 +73,7 @@ import android.widget.TextView;
 
 public class MapsActivity extends AppCompatActivity
         implements OnMapReadyCallback, ActivityCompat.OnRequestPermissionsResultCallback {
-
+    private static int targetHeight;
     private static final int RQS_OPEN_IMAGE = 1;
     private static final int RQS_READ_EXTERNAL_STORAGE = 2;
     private static String photoPath;
@@ -99,7 +99,7 @@ public class MapsActivity extends AppCompatActivity
     private static final int UPDATE_INTERVAL_MS = 1000;  // 1초
     private static final int FASTEST_UPDATE_INTERVAL_MS = 500; // 0.5초
     private static int flag = 0;
-    private static ArrayList<String[]> image_info =new ArrayList<String[]>(); //image_info[0] = 사진주소 image_info[1] = lat image_info[2] = longT image_info[3] = date
+    private ArrayList<String> image_info = new ArrayList<String>();//image_info[0] = 사진주소 image_info[1] = lat image_info[2] = longT image_info[3] = date
     private ArrayList<String> images;
 
 
@@ -410,8 +410,8 @@ public class MapsActivity extends AppCompatActivity
     public void onMapReady(GoogleMap googleMap) {
         //여기
         Log.d(TAG, "onMapReady :");
-
         mGoogleMap = googleMap;
+
 
         //googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
@@ -489,6 +489,7 @@ public class MapsActivity extends AppCompatActivity
             public void onClick(View v) {
                 btn_timer_reset.setBackgroundColor(getResources().getColor(R.color.colorGray));
                 mGoogleMap.clear();
+                image_info.clear();
             }
         });
 
@@ -501,9 +502,9 @@ public class MapsActivity extends AppCompatActivity
                     return;
                 }
                 isBtnStart = true;
+
                 Toast.makeText(context, "시작되었습니다", Toast.LENGTH_SHORT).show();
                 //LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
-                image_info.clear();
                 int diffDays = doDiffOfDate(pick_date_dpt, pick_date_arr);
                 //Toast.makeText(MapsActivity.this, ""+diffDays, Toast.LENGTH_SHORT).show();
 
@@ -539,17 +540,18 @@ public class MapsActivity extends AppCompatActivity
                         //Uri uri_pho = getUriFromPath(path_pho);
                         out_latlong = showExif(string);
                         if (out_latlong[0] != 0 && out_latlong[1] != 0) {
-                            image_info.add(new String[]{string,Float.toString(out_latlong[0]), Float.toString(out_latlong[1]), loop_date});
+                            image_info.add(string + ":" + Float.toString(out_latlong[0]) + ":" + Float.toString(out_latlong[1]) + ":" + loop_date);
                             //Toast.makeText(context, images.toString(), Toast.LENGTH_SHORT).show();
                             LatLng exifLatLng = new LatLng(out_latlong[0],out_latlong[1]);
                             Bitmap.Config conf = Bitmap.Config.ARGB_8888;
-                            Bitmap bmp = Bitmap.createBitmap(200, 200, conf);
+                            Bitmap bmp = Bitmap.createBitmap(220, targetHeight+20, conf);
                             Canvas canvas1 = new Canvas(bmp);
+                            canvas1.drawColor(Color.WHITE);
                             Paint color = new Paint();
                             color.setTextSize(35);
                             color.setColor(Color.BLACK);
                             Bitmap resize_bmp = resizeBitmapImg(BitmapFactory.decodeFile(photoPath));
-                            canvas1.drawBitmap(resize_bmp, 0, 0, null);
+                            canvas1.drawBitmap(resize_bmp, resize_bmp.getHeight()*(1/20), resize_bmp.getWidth()*(1/20), null);
                             mGoogleMap.addMarker(new MarkerOptions().anchor(0, 0)
                                     .position(exifLatLng)
                                     .title("Hi!"))
@@ -563,10 +565,24 @@ public class MapsActivity extends AppCompatActivity
                             mGoogleMap.addPolyline(polylineOptions);
                             }
                     }
+
+
+
+
                 }
-                Intent intent = new Intent(MapsActivity.this,ImageGridActivity.class);
-                intent.putExtra("image_info", image_info);
-                MapsActivity.this.startActivity(intent);
+                Intent intent = new Intent(MapsActivity.this, ImageGridActivity.class);
+                intent.putStringArrayListExtra("image_info",image_info);
+                startActivity(intent);
+
+
+                String [] info1  = image_info.get(0).split(":");
+                String [] info2  = image_info.get(1).split(":");
+                float [] results = new float[1];
+                Location.distanceBetween(Float.parseFloat(info1[1]),Float.parseFloat(info1[2]),Float.parseFloat(info2[1]),Float.parseFloat(info2[2]),results);
+                float result = results[0];
+                Toast.makeText(MapsActivity.this, result+"m", Toast.LENGTH_SHORT).show();
+
+
             }
         });
 
@@ -577,6 +593,7 @@ public class MapsActivity extends AppCompatActivity
     @Override
     protected void onStart() {
         super.onStart();
+
 
         Log.d(TAG, "onStart");
 
@@ -595,8 +612,8 @@ public class MapsActivity extends AppCompatActivity
         int resizeWidth = 200;
 
         double aspectRatio = (double) original.getHeight() / (double) original.getWidth();
-        int targetHeight = (int) (resizeWidth * aspectRatio);
-        Bitmap result = Bitmap.createScaledBitmap(original, resizeWidth, targetHeight, false);
+        targetHeight = (int) (resizeWidth * aspectRatio);
+         Bitmap result = Bitmap.createScaledBitmap(original, resizeWidth, targetHeight, false);
         if (result != original) {
             original.recycle();
         }

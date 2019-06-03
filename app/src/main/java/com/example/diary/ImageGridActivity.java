@@ -1,6 +1,7 @@
 package com.example.diary;
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
@@ -17,6 +18,7 @@ import android.widget.GridView;
 import android.widget.Toast;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.UUID;
 
 public class ImageGridActivity extends AppCompatActivity {
@@ -32,7 +34,7 @@ public class ImageGridActivity extends AppCompatActivity {
             R.drawable.gallery_image_09,
             R.drawable.gallery_image_10,
     };
-
+    private ArrayList<String> image_info = new ArrayList<String>();
     String pathSave = "";
     MediaRecorder mediaRecorder;
     MediaPlayer mediaPlayer;
@@ -53,20 +55,24 @@ public class ImageGridActivity extends AppCompatActivity {
         btnStop =(Button)findViewById(R.id.btnSTOP);
         btnStopRecord = (Button)findViewById(R.id.btnStopRecord);
 
+        image_info = getIntent().getStringArrayListExtra("image_info");
+
         if (!checkPermissionFromDevice()) {
             requestPermission();
         }
 
+        Toast.makeText(this, image_info.toString(), Toast.LENGTH_SHORT).show();
         btnRecord.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 isRecord = true;
+                //Toast.makeText(ImageGridActivity.this, image_info.get(0), Toast.LENGTH_LONG).show();
                 if (checkPermissionFromDevice()) {
                     pathSave = Environment.getExternalStorageDirectory()
                             .getAbsolutePath() + "/"
                             + UUID.randomUUID().toString() + "_audio_record.3gp";
                     setupMediaRecorder();
-                    Toast.makeText(ImageGridActivity.this, "Recording..." + pathSave, Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(ImageGridActivity.this, "Recording..." + pathSave, Toast.LENGTH_SHORT).show();
                     try {
                         mediaRecorder.prepare();
                         if (isRecord)
@@ -167,5 +173,4 @@ public class ImageGridActivity extends AppCompatActivity {
 
 
     }
-
 }

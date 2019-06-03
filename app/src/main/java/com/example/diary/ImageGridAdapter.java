@@ -44,7 +44,7 @@ public class ImageGridAdapter extends BaseAdapter {
             imageView = new ImageView(context);
             imageView.setAdjustViewBounds(true);
             imageView.setImageBitmap(bmp);
-            ImageClickListener imageViewClickListener = new ImageClickListener(context, imageIDs);
+            ImageClickListener imageViewClickListener = new ImageClickListener(context, imageIDs, position);
             imageView.setOnClickListener(imageViewClickListener);
         }
         return imageView;

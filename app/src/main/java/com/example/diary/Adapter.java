@@ -20,12 +20,13 @@ public class Adapter extends PagerAdapter
     private LayoutInflater inflater;
     private Context context;
     private String[] imageIDs;
+    private int position_num;
 
-
-    public Adapter(Context context,String[] imageIDs)
+    public Adapter(Context context,String[] imageIDs, int position)
     {
         this.context=context;
         this.imageIDs =imageIDs;
+        this.position_num = position;
     }
     @Override
     public int getCount()
@@ -49,7 +50,7 @@ public class Adapter extends PagerAdapter
         EditText edittext= (EditText) v.findViewById(R.id.edittext);
 
 
-        Bitmap bmp = BitmapFactory.decodeFile(imageIDs[position]);
+        Bitmap bmp = BitmapFactory.decodeFile(imageIDs[position_num]);
         //bmp = Bitmap.createScaledBitmap(bmp,320,240,false);
         imageView.setImageBitmap(bmp);
 

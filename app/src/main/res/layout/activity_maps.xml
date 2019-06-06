@@ -28,6 +28,19 @@
         android:layout_centerHorizontal="true"
         android:background="#808C8C8C"/>
 
+    <Spinner
+        android:id="@+id/spinner2"
+        android:fontFamily="@font/comic"
+        android:textSize="13dp"
+        android:textStyle="bold"
+        android:layout_marginTop="130dp"
+        android:gravity="center"
+        android:layout_centerHorizontal="true"
+        android:layout_width="250dp"
+        android:layout_height="38dp"
+        android:background="#808C8C8C"></Spinner>
+
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -35,15 +48,15 @@
         android:layout_marginTop="30dp"
         android:orientation="horizontal"
         android:layout_alignParentTop="true">
-    <Button
-        android:id="@+id/btnPick_dpt"
-        android:layout_width="75dp"
-        android:layout_height="33dp"
-        android:fontFamily="@font/comic"
-        android:textStyle="bold"
-        android:background="@color/colorAccent"
-        android:textColor="@color/grayLight"
-        android:text="Depart" />
+        <Button
+            android:id="@+id/btnPick_dpt"
+            android:layout_width="75dp"
+            android:layout_height="33dp"
+            android:fontFamily="@font/comic"
+            android:textStyle="bold"
+            android:background="@color/colorAccent"
+            android:textColor="@color/grayLight"
+            android:text="Depart" />
         <Button
             android:id="@+id/btnPick_arr"
             android:fontFamily="@font/comic"

@@ -48,8 +48,11 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.Spinner;
 import android.widget.Toast;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -101,7 +104,10 @@ public class MapsActivity extends AppCompatActivity
     private static int flag = 0;
     private ArrayList<String> image_info = new ArrayList<String>();//image_info[0] = 사진주소 image_info[1] = lat image_info[2] = longT image_info[3] = date
     private ArrayList<String> images;
-
+    private Spinner spinner2;
+    private ArrayList<String> arrayList = new ArrayList<>();
+    private ArrayAdapter<String> arrayAdapter;
+    private String select_date;
 
     // onRequestPermissionsResult에서 수신된 결과에서 ActivityCompat.requestPermissions를 사용한 퍼미션 요청을 구별하기 위해 사용됩니다.
     private static final int PERMISSIONS_REQUEST_CODE = 100;
@@ -115,6 +121,7 @@ public class MapsActivity extends AppCompatActivity
     public static final PatternItem DASH = new Dash(PATTERN_DASH_LENGTH_PX);
     public static final PatternItem GAP = new Gap(PATTERN_GAP_LENGTH_PX);
     public static final List<PatternItem> PATTERN_POLYGON_ALPHA = Arrays.asList(GAP, DASH);
+
 
     // 앱을 실행하기 위해 필요한 퍼미션을 정의합니다.
     String[] REQUIRED_PERMISSIONS = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};  // 외부 저장소
@@ -261,6 +268,70 @@ public class MapsActivity extends AppCompatActivity
         MapFragment mapFragment = (MapFragment) getFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+        //추가한 부분
+
+
+        pick_date_dpt = getIntent().getExtras().getString("pick_date_dpt");
+        pick_date_arr = getIntent().getExtras().getString("pick_date_arr");
+
+        int diffDays = doDiffOfDate(pick_date_dpt, pick_date_arr);
+        //Toast.makeText(MapsActivity.this, ""+diffDays, Toast.LENGTH_SHORT).show();
+        arrayList.add("전체 일정");
+        for (int i = 0; i <= diffDays; i++) {
+            String loop_date = null;
+            if (i == 0) {
+                loop_date = pick_date_dpt;
+                arrayList.add(loop_date);
+            } else if (i == diffDays) {
+                loop_date = pick_date_arr;
+                arrayList.add(loop_date);
+            }
+            else {
+                DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.KOREA);
+                Date date_d = null;
+                try {
+                    date_d = dateFormat.parse(pick_date_dpt);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                Calendar cal = Calendar.getInstance();
+                cal.setTime(date_d);
+                cal.add(Calendar.DATE, i);
+                loop_date = dateFormat.format(cal.getTime());
+                arrayList.add(loop_date);
+
+            }
+
+        }
+
+        arrayAdapter = new ArrayAdapter<>(getApplicationContext(),android.R.layout.simple_spinner_dropdown_item, arrayList);
+
+        spinner2 = (Spinner)findViewById(R.id.spinner2);
+        spinner2.setAdapter(arrayAdapter);
+        spinner2.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                if(arrayList.get(i) == "전체 일정")
+                {
+                    select_date = "1994-06-06";
+                }
+                else {
+                    select_date = arrayList.get(i);
+                }
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                select_date = "1994-06-06";
+            }
+        });
+
+
+
+
+
+
+        //여기까지
+
 
         this.init();
         mTv = (TextView) findViewById(R.id.textview);
@@ -466,6 +537,9 @@ public class MapsActivity extends AppCompatActivity
         mGoogleMap.getUiSettings().setMyLocationButtonEnabled(true);
         mGoogleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
 
+
+
+
         btn_timer_start = (Button) findViewById(R.id.btn_timer_start);
         btn_timer_stop = (Button) findViewById(R.id.btn_timer_finish);
         btn_timer_reset = (Button) findViewById(R.id.btn_timer_reset);
@@ -505,42 +579,95 @@ public class MapsActivity extends AppCompatActivity
 
                 Toast.makeText(context, "시작되었습니다", Toast.LENGTH_SHORT).show();
                 //LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
-                int diffDays = doDiffOfDate(pick_date_dpt, pick_date_arr);
-                //Toast.makeText(MapsActivity.this, ""+diffDays, Toast.LENGTH_SHORT).show();
+
+                int print_diffDays;
+                if (select_date=="1994-06-06"){
+                    print_diffDays = doDiffOfDate(pick_date_dpt, pick_date_arr);
+
+                    for (int i = 0; i <=print_diffDays; i++) {
+                        String loop_date = null;
+                        if (i == 0) {
+                            loop_date = pick_date_dpt;
+                        } else if (i == print_diffDays) {
+                            loop_date = pick_date_arr;
+                        }
+                        else {
+
+                            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.KOREA);
+                            Date date_d = null;
+
+                            try {
+                                date_d = dateFormat.parse(pick_date_dpt);
+                            } catch (ParseException e) {
+                                e.printStackTrace();
+                            }
+                            Calendar cal = Calendar.getInstance();
+                            cal.setTime(date_d);
+                            cal.add(Calendar.DATE, i);
+                            loop_date = dateFormat.format(cal.getTime());
+
+                        }
+                        float[] out_latlong;
+
+                        images = getPathOfAllImages(loop_date);
+                        for (String string : images) {
+                            //String path_pho = images.get(0);
+                            //Uri uri_pho = getUriFromPath(path_pho);
+                            out_latlong = showExif(string);
+                            if (out_latlong[0] != 0 && out_latlong[1] != 0) {
+                                image_info.add(string + ":" + Float.toString(out_latlong[0]) + ":" + Float.toString(out_latlong[1]) + ":" + select_date);
+                                //Toast.makeText(context, images.toString(), Toast.LENGTH_SHORT).show();
+                                LatLng exifLatLng = new LatLng(out_latlong[0],out_latlong[1]);
+                                Bitmap.Config conf = Bitmap.Config.ARGB_8888;
+                                Bitmap bmp = Bitmap.createBitmap(220, targetHeight+20, conf);
+                                Canvas canvas1 = new Canvas(bmp);
+                                canvas1.drawColor(Color.WHITE);
+                                Paint color = new Paint();
+                                color.setTextSize(35);
+                                color.setColor(Color.BLACK);
+                                Bitmap resize_bmp = resizeBitmapImg(BitmapFactory.decodeFile(photoPath));
+                                canvas1.drawBitmap(resize_bmp, resize_bmp.getHeight()*(1/20)+11, resize_bmp.getWidth()*(1/20)+11, null);
+                                mGoogleMap.addMarker(new MarkerOptions().anchor(0, 0)
+                                        .position(exifLatLng)
+                                        .title("Hi!"))
+                                        .setIcon(BitmapDescriptorFactory.fromBitmap(bmp));
+                                polylineOptions = new PolylineOptions();
+                                polylineOptions.color(Color.rgb(255, 113, 181));
+                                polylineOptions.width(10);
+                                polylineOptions.pattern(PATTERN_POLYGON_ALPHA);
+                                arrayPoints.add(exifLatLng);
+                                polylineOptions.addAll(arrayPoints);
+                                mGoogleMap.addPolyline(polylineOptions);
+                            }
+                        }
+                    }
+
+                    Intent intent = new Intent(MapsActivity.this, ImageGridActivity.class);
+                    intent.putStringArrayListExtra("image_info",image_info);
+                    startActivity(intent);
 
 
-                for (int i = 0; i <= diffDays; i++) {
+                    //String [] info1  = image_info.get(0).split(":");
+                    //String [] info2  = image_info.get(1).split(":");
+                    //float [] results = new float[1];
+                    //Location.distanceBetween(Float.parseFloat(info1[1]),Float.parseFloat(info1[2]),Float.parseFloat(info2[1]),Float.parseFloat(info2[2]),results);
+                    //float result = results[0];
+                    //Toast.makeText(MapsActivity.this, result+"m", Toast.LENGTH_SHORT).show();
+
+                }
+                else
+                {
                     String loop_date = null;
-                    if (i == 0) {
-                        loop_date = pick_date_dpt;
-                    } else if (i == diffDays)
-                        loop_date = pick_date_arr;
-                    else {
-
-                        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd",Locale.KOREA);
-                        Date date_d = null;
-
-                        try{
-                            date_d = dateFormat.parse(pick_date_dpt);
-                        }
-                        catch (ParseException e)
-                        {
-                            e.printStackTrace();
-                        }
-                        Calendar cal= Calendar.getInstance();
-                        cal.setTime(date_d);
-                        cal.add(Calendar.DATE,i);
-                        loop_date = dateFormat.format(cal.getTime());
-
-                        }
+                    loop_date = select_date;
                     float[] out_latlong;
+
                     images = getPathOfAllImages(loop_date);
                     for (String string : images) {
                         //String path_pho = images.get(0);
                         //Uri uri_pho = getUriFromPath(path_pho);
                         out_latlong = showExif(string);
                         if (out_latlong[0] != 0 && out_latlong[1] != 0) {
-                            image_info.add(string + ":" + Float.toString(out_latlong[0]) + ":" + Float.toString(out_latlong[1]) + ":" + loop_date);
+                            image_info.add(string + ":" + Float.toString(out_latlong[0]) + ":" + Float.toString(out_latlong[1]) + ":" + select_date);
                             //Toast.makeText(context, images.toString(), Toast.LENGTH_SHORT).show();
                             LatLng exifLatLng = new LatLng(out_latlong[0],out_latlong[1]);
                             Bitmap.Config conf = Bitmap.Config.ARGB_8888;
@@ -563,32 +690,28 @@ public class MapsActivity extends AppCompatActivity
                             arrayPoints.add(exifLatLng);
                             polylineOptions.addAll(arrayPoints);
                             mGoogleMap.addPolyline(polylineOptions);
-                            }
+                        }
                     }
 
 
+                    Intent intent = new Intent(MapsActivity.this, ImageGridActivity.class);
+                    intent.putStringArrayListExtra("image_info",image_info);
+                    startActivity(intent);
 
 
+                    //String [] info1  = image_info.get(0).split(":");
+                    //String [] info2  = image_info.get(1).split(":");
+                    //float [] results = new float[1];
+                    //Location.distanceBetween(Float.parseFloat(info1[1]),Float.parseFloat(info1[2]),Float.parseFloat(info2[1]),Float.parseFloat(info2[2]),results);
+                    //float result = results[0];
+                    //Toast.makeText(MapsActivity.this, result+"m", Toast.LENGTH_SHORT).show();
                 }
-                Intent intent = new Intent(MapsActivity.this, ImageGridActivity.class);
-                intent.putStringArrayListExtra("image_info",image_info);
-                startActivity(intent);
-
-
-                String [] info1  = image_info.get(0).split(":");
-                String [] info2  = image_info.get(1).split(":");
-                float [] results = new float[1];
-                Location.distanceBetween(Float.parseFloat(info1[1]),Float.parseFloat(info1[2]),Float.parseFloat(info2[1]),Float.parseFloat(info2[2]),results);
-                float result = results[0];
-                Toast.makeText(MapsActivity.this, result+"m", Toast.LENGTH_SHORT).show();
-
+                //Toast.makeText(MapsActivity.this, ""+diffDays, Toast.LENGTH_SHORT).show();
 
             }
         });
 
     }
-
-
 
     @Override
     protected void onStart() {
@@ -609,11 +732,11 @@ public class MapsActivity extends AppCompatActivity
 
     static public Bitmap resizeBitmapImg(Bitmap original) {
 
-        int resizeWidth = 200;
+        int resizeWidth = 197;
 
         double aspectRatio = (double) original.getHeight() / (double) original.getWidth();
         targetHeight = (int) (resizeWidth * aspectRatio);
-         Bitmap result = Bitmap.createScaledBitmap(original, resizeWidth, targetHeight, false);
+        Bitmap result = Bitmap.createScaledBitmap(original, resizeWidth, targetHeight, false);
         if (result != original) {
             original.recycle();
         }
@@ -711,7 +834,7 @@ public class MapsActivity extends AppCompatActivity
 
     }
 
-     //* ActivityCompat.requestPermissions를 사용한 퍼미션 요청의 결과를 리턴받는 메소드입니다.
+    //* ActivityCompat.requestPermissions를 사용한 퍼미션 요청의 결과를 리턴받는 메소드입니다.
     @Override
     public void onRequestPermissionsResult(int permsRequestCode,
                                            @NonNull String[] permissions,

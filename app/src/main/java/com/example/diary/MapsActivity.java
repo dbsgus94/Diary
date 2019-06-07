@@ -74,6 +74,8 @@ import android.app.Activity;
 import android.support.media.ExifInterface;
 import android.widget.TextView;
 
+import static com.android.volley.VolleyLog.setTag;
+
 public class MapsActivity extends AppCompatActivity
         implements OnMapReadyCallback, ActivityCompat.OnRequestPermissionsResultCallback {
     private static int targetHeight;
@@ -85,11 +87,9 @@ public class MapsActivity extends AppCompatActivity
     private GoogleMap mGoogleMap = null;
     private Marker currentMarker = null;
     private PolylineOptions polylineOptions;
-    private Polyline polyline;
+    private List <Polyline> polyline = new ArrayList<Polyline>();
     private ArrayList<LatLng> arrayPoints;
     private Button btn_timer_start;
-    private Button btn_timer_stop;
-    private Button btn_timer_reset;
     public static Context context;
     private boolean isBtnStart = false;
     private FusedLocationProviderClient mFusedLocationClient;
@@ -108,7 +108,9 @@ public class MapsActivity extends AppCompatActivity
     private ArrayList<String> arrayList = new ArrayList<>();
     private ArrayAdapter<String> arrayAdapter;
     private String select_date;
-
+    private int cnt;
+    private int cnt2;
+    private ArrayList<String> marker_list = new ArrayList<>();
     // onRequestPermissionsResult에서 수신된 결과에서 ActivityCompat.requestPermissions를 사용한 퍼미션 요청을 구별하기 위해 사용됩니다.
     private static final int PERMISSIONS_REQUEST_CODE = 100;
     boolean needRequest = false;
@@ -128,12 +130,6 @@ public class MapsActivity extends AppCompatActivity
     Location mCurrentLocatiion;
     LatLng currentPosition;
     Uri targetUri = null;
-    TextView mTv;
-    Button mBtn_dpt;
-    Button mBtn_arr;
-    Calendar c;
-    DatePickerDialog dpd_dpt,dpd_arr;
-
 
     float[] showExif(String s_path) {
         float lat_long[] = {0,0};
@@ -327,69 +323,8 @@ public class MapsActivity extends AppCompatActivity
 
 
 
-
-
-
         //여기까지
-
-
         this.init();
-        mTv = (TextView) findViewById(R.id.textview);
-        mBtn_dpt = (Button) findViewById(R.id.btnPick_dpt);
-        mBtn_arr = (Button) findViewById(R.id.btnPick_arr);
-        mBtn_dpt.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                c = Calendar.getInstance();
-                int day = c.get(Calendar.DAY_OF_MONTH);
-                int month = c.get(Calendar.MONTH);
-                int year = c.get(Calendar.YEAR);
-
-                dpd_dpt = new DatePickerDialog(context, new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(DatePicker datePicker, int mYear, int mMonth, int mDay) {
-                        if (mMonth + 1 < 10)
-                            if (mDay >= 10)
-                                pick_date_dpt = (mYear + "-0" + (mMonth + 1) + "-" + mDay);
-                            else
-                                pick_date_dpt= (mYear + "-0" + (mMonth + 1) + "-0" + mDay);
-                        else if (mDay < 10)
-                            pick_date_dpt = (mYear + "-" + (mMonth + 1) + "-0" + mDay);
-                        else
-                            pick_date_dpt = (mYear + "-" + (mMonth + 1) + "-" + mDay);
-                        Toast.makeText(MapsActivity.this, pick_date_dpt, Toast.LENGTH_SHORT).show();
-                    }
-                }, year, month, day);
-                dpd_dpt.show();
-            }
-        });
-        mBtn_arr.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                c = Calendar.getInstance();
-                int day = c.get(Calendar.DAY_OF_MONTH);
-                int month = c.get(Calendar.MONTH);
-                int year = c.get(Calendar.YEAR);
-
-                dpd_arr = new DatePickerDialog(context, new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(DatePicker datePicker, int mYear, int mMonth, int mDay) {
-                        if (mMonth + 1 < 10)
-                            if (mDay >= 10)
-                                pick_date_arr = (mYear + "-0" + (mMonth + 1) + "-" + mDay);
-                            else
-                                pick_date_arr = (mYear + "-0" + (mMonth + 1) + "-0" + mDay);
-                        else if (mDay < 10)
-                            pick_date_arr = (mYear + "-" + (mMonth + 1) + "-0" + mDay);
-                        else
-                            pick_date_arr = (mYear + "-" + (mMonth + 1) + "-" + mDay);
-                        Toast.makeText(MapsActivity.this, pick_date_arr, Toast.LENGTH_SHORT).show();
-                    }
-                }, year, month, day);
-                dpd_arr.show();
-            }
-        });
-
     }
 
 
@@ -537,48 +472,13 @@ public class MapsActivity extends AppCompatActivity
         mGoogleMap.getUiSettings().setMyLocationButtonEnabled(true);
         mGoogleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
 
-
-
-
         btn_timer_start = (Button) findViewById(R.id.btn_timer_start);
-        btn_timer_stop = (Button) findViewById(R.id.btn_timer_finish);
-        btn_timer_reset = (Button) findViewById(R.id.btn_timer_reset);
-
-        btn_timer_stop.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                btn_timer_stop.setBackgroundColor(getResources().getColor(R.color.colorGray));
-                if (isBtnStart) {
-                    Toast.makeText(context, "오늘 일정은 여기까지 입니다.", Toast.LENGTH_SHORT).show();
-                    isBtnStart = false;
-                    return;
-                }
-            }
-
-        });
-
-
-        btn_timer_reset.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                btn_timer_reset.setBackgroundColor(getResources().getColor(R.color.colorGray));
-                mGoogleMap.clear();
-                image_info.clear();
-            }
-        });
-
         btn_timer_start.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                btn_timer_start.setBackgroundColor(getResources().getColor(R.color.colorGray));
-                if (isBtnStart) {
-                    Toast.makeText(context, "이미 시작되었습니다", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                isBtnStart = true;
-
-                Toast.makeText(context, "시작되었습니다", Toast.LENGTH_SHORT).show();
-                //LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+                mGoogleMap.clear();
+                image_info.clear();
+                arrayPoints.clear();
 
                 int print_diffDays;
                 if (select_date=="1994-06-06"){
@@ -627,17 +527,54 @@ public class MapsActivity extends AppCompatActivity
                                 color.setColor(Color.BLACK);
                                 Bitmap resize_bmp = resizeBitmapImg(BitmapFactory.decodeFile(photoPath));
                                 canvas1.drawBitmap(resize_bmp, resize_bmp.getHeight()*(1/20)+11, resize_bmp.getWidth()*(1/20)+11, null);
-                                mGoogleMap.addMarker(new MarkerOptions().anchor(0, 0)
-                                        .position(exifLatLng)
-                                        .title("Hi!"))
-                                        .setIcon(BitmapDescriptorFactory.fromBitmap(bmp));
-                                polylineOptions = new PolylineOptions();
-                                polylineOptions.color(Color.rgb(255, 113, 181));
-                                polylineOptions.width(10);
-                                polylineOptions.pattern(PATTERN_POLYGON_ALPHA);
-                                arrayPoints.add(exifLatLng);
-                                polylineOptions.addAll(arrayPoints);
-                                mGoogleMap.addPolyline(polylineOptions);
+
+                                String [] info1;
+                                String [] info2;
+
+                                if (image_info.size() == 1)
+                                {
+                                    mGoogleMap.addMarker(new MarkerOptions().anchor(0, 0)
+                                            .position(exifLatLng)
+                                            .title("0"))
+                                            .setIcon(BitmapDescriptorFactory.fromBitmap(bmp));
+                                    polylineOptions = new PolylineOptions();
+                                    polylineOptions.color(Color.rgb(255, 113, 181));
+                                    polylineOptions.width(10);
+                                    polylineOptions.pattern(PATTERN_POLYGON_ALPHA);
+                                    arrayPoints.add(exifLatLng);
+                                    polylineOptions.addAll(arrayPoints);
+                                    polyline.add( mGoogleMap.addPolyline(polylineOptions));
+                                    cnt = 0;
+                                    cnt2= cnt2+1;
+                                }
+
+                                else if (image_info.size()>1) {
+                                    info1 = image_info.get(cnt).split(":");
+                                    int k = image_info.size() - 1;
+                                    info2 = image_info.get(k).split(":");
+
+                                    float[] results = new float[1];
+                                    Location.distanceBetween(Float.parseFloat(info1[1]), Float.parseFloat(info1[2]), Float.parseFloat(info2[1]), Float.parseFloat(info2[2]), results);
+                                    Location.distanceBetween(Float.parseFloat(info1[1]), Float.parseFloat(info1[2]), Float.parseFloat(info2[1]), Float.parseFloat(info2[2]), results);
+                                    float result = results[0];
+                                    //Toast.makeText(MapsActivity.this, result + "m", Toast.LENGTH_SHORT).show();
+                                    if(result >= 500)
+                                    {
+                                        mGoogleMap.addMarker(new MarkerOptions().anchor(0, 0)
+                                                .position(exifLatLng)
+                                                .title(""+cnt2))
+                                                .setIcon(BitmapDescriptorFactory.fromBitmap(bmp));
+                                        polylineOptions = new PolylineOptions();
+                                        polylineOptions.color(Color.rgb(255, 113, 181));
+                                        polylineOptions.width(10);
+                                        polylineOptions.pattern(PATTERN_POLYGON_ALPHA);
+                                        arrayPoints.add(exifLatLng);
+                                        polylineOptions.addAll(arrayPoints);
+                                        polyline.add( mGoogleMap.addPolyline(polylineOptions));
+                                        cnt = image_info.size()-1;
+                                        cnt2 =cnt2+1;
+                                    }
+                                }
                             }
                         }
                     }
@@ -645,7 +582,13 @@ public class MapsActivity extends AppCompatActivity
                     Intent intent = new Intent(MapsActivity.this, ImageGridActivity.class);
                     intent.putStringArrayListExtra("image_info",image_info);
                     startActivity(intent);
-
+                    mGoogleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                        @Override
+                        public boolean onMarkerClick(Marker marker) {
+                            Toast.makeText(context, marker.getTitle(), Toast.LENGTH_SHORT).show();
+                            return false;
+                        }
+                    });
 
                     //String [] info1  = image_info.get(0).split(":");
                     //String [] info2  = image_info.get(1).split(":");
@@ -679,34 +622,103 @@ public class MapsActivity extends AppCompatActivity
                             color.setColor(Color.BLACK);
                             Bitmap resize_bmp = resizeBitmapImg(BitmapFactory.decodeFile(photoPath));
                             canvas1.drawBitmap(resize_bmp, resize_bmp.getHeight()*(1/20), resize_bmp.getWidth()*(1/20), null);
-                            mGoogleMap.addMarker(new MarkerOptions().anchor(0, 0)
-                                    .position(exifLatLng)
-                                    .title("Hi!"))
-                                    .setIcon(BitmapDescriptorFactory.fromBitmap(bmp));
-                            polylineOptions = new PolylineOptions();
-                            polylineOptions.color(Color.rgb(255, 113, 181));
-                            polylineOptions.width(10);
-                            polylineOptions.pattern(PATTERN_POLYGON_ALPHA);
-                            arrayPoints.add(exifLatLng);
-                            polylineOptions.addAll(arrayPoints);
-                            mGoogleMap.addPolyline(polylineOptions);
+
+                            String [] info1;
+                            String [] info2;
+
+                            if (image_info.size() == 1)
+                            {
+                                mGoogleMap.addMarker(new MarkerOptions().anchor(0, 0)
+                                        .position(exifLatLng)
+                                        .title("0"))
+                                        .setIcon(BitmapDescriptorFactory.fromBitmap(bmp));
+                                polylineOptions = new PolylineOptions();
+                                polylineOptions.color(Color.rgb(255, 113, 181));
+                                polylineOptions.width(10);
+                                polylineOptions.pattern(PATTERN_POLYGON_ALPHA);
+                                arrayPoints.add(exifLatLng);
+                                polylineOptions.addAll(arrayPoints);
+                                polyline.add( mGoogleMap.addPolyline(polylineOptions));
+                                cnt = 0;
+                            }
+
+                            else if (image_info.size()>1) {
+                                info1 = image_info.get(cnt).split(":");
+                                int k = image_info.size() - 1;
+                                info2 = image_info.get(k).split(":");
+
+                                float[] results = new float[1];
+                                Location.distanceBetween(Float.parseFloat(info1[1]), Float.parseFloat(info1[2]), Float.parseFloat(info2[1]), Float.parseFloat(info2[2]), results);
+                                Location.distanceBetween(Float.parseFloat(info1[1]), Float.parseFloat(info1[2]), Float.parseFloat(info2[1]), Float.parseFloat(info2[2]), results);
+                                float result = results[0];
+                                //Toast.makeText(MapsActivity.this, result + "m", Toast.LENGTH_SHORT).show();
+                                if(result >= 500)
+                                {
+                                    marker_list.add(cnt+":"+k);
+                                    cnt2 =cnt2+1;
+                                    mGoogleMap.addMarker(new MarkerOptions().anchor(0, 0)
+                                            .position(exifLatLng)
+                                            .title(""+cnt2))
+                                            .setIcon(BitmapDescriptorFactory.fromBitmap(bmp));
+                                    polylineOptions = new PolylineOptions();
+                                    polylineOptions.color(Color.rgb(255, 113, 181));
+                                    polylineOptions.width(10);
+                                    polylineOptions.pattern(PATTERN_POLYGON_ALPHA);
+                                    arrayPoints.add(exifLatLng);
+                                    polylineOptions.addAll(arrayPoints);
+                                    polyline.add( mGoogleMap.addPolyline(polylineOptions));
+                                    cnt = image_info.size()-1;
+
+
+                                }
+                                else if(images.size() == cnt2+1)
+                                {
+                                    marker_list.add(cnt+":"+k);
+                                }
+                            }
+
+
                         }
                     }
 
-
                     Intent intent = new Intent(MapsActivity.this, ImageGridActivity.class);
-                    intent.putStringArrayListExtra("image_info",image_info);
-                    startActivity(intent);
+                    mGoogleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                                @Override
+                                public boolean onMarkerClick(Marker marker) {
+                                    //Toast.makeText(context, marker.getTitle(), Toast.LENGTH_SHORT).show();
+                                    if(Integer.parseInt(marker.getTitle()) == cnt)
+                                    {
+                                        int index_num = Integer.parseInt(marker.getTitle());
+                                        String[] temp = marker_list.get(index_num-1).split(":");
+                                        int num_temp1 = Integer.parseInt(temp[1]);
 
+                                        ArrayList<String> temp_array= new ArrayList<String>();
+                                        for(int i =num_temp1+1;i<=image_info.size()-1;i++){
+                                            temp_array.add(image_info.get(i));
+                                        }
+                                        intent.putStringArrayListExtra("image_info",temp_array);
+                                        startActivity(intent);
+                                    }
+                                    else
+                                    {
+                                        int index_num = Integer.parseInt(marker.getTitle());
+                                        String[] temp = marker_list.get(index_num).split(":");
+                                        int num_temp0 = Integer.parseInt(temp[0]);
+                                        int num_temp1 = Integer.parseInt(temp[1]);
 
-                    //String [] info1  = image_info.get(0).split(":");
-                    //String [] info2  = image_info.get(1).split(":");
-                    //float [] results = new float[1];
-                    //Location.distanceBetween(Float.parseFloat(info1[1]),Float.parseFloat(info1[2]),Float.parseFloat(info2[1]),Float.parseFloat(info2[2]),results);
-                    //float result = results[0];
-                    //Toast.makeText(MapsActivity.this, result+"m", Toast.LENGTH_SHORT).show();
+                                        ArrayList<String> temp_array= new ArrayList<String>();
+                                        for(int i =num_temp0;i<=num_temp1;i++){
+                                            temp_array.add(image_info.get(i));
+                                        }
+                                        intent.putStringArrayListExtra("image_info",temp_array);
+                                        startActivity(intent);
+
+                                    }
+                                    return false;
+                        }
+                    });
+
                 }
-                //Toast.makeText(MapsActivity.this, ""+diffDays, Toast.LENGTH_SHORT).show();
 
             }
         });

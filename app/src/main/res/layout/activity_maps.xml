@@ -14,115 +14,34 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <EditText
-        android:id="@+id/textview"
-        android:layout_width="250dp"
-        android:layout_height="38dp"
-        android:textColor="@color/grayLight"
-        android:fontFamily="@font/comic"
-        android:hint="지역명 쓰거라"
-        android:textSize="13dp"
-        android:textStyle="bold"
-        android:layout_marginTop="77dp"
-        android:gravity="center"
-        android:layout_centerHorizontal="true"
-        android:background="#808C8C8C"/>
-
-    <Spinner
-        android:id="@+id/spinner2"
-        android:fontFamily="@font/comic"
-        android:textSize="13dp"
-        android:textStyle="bold"
-        android:layout_marginTop="130dp"
-        android:gravity="center"
-        android:layout_centerHorizontal="true"
-        android:layout_width="250dp"
-        android:layout_height="38dp"
-        android:background="#808C8C8C"></Spinner>
-
-
     <LinearLayout
+        android:layout_marginTop="50dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:layout_marginTop="30dp"
         android:orientation="horizontal"
-        android:layout_alignParentTop="true">
-        <Button
-            android:id="@+id/btnPick_dpt"
-            android:layout_width="75dp"
-            android:layout_height="33dp"
-            android:fontFamily="@font/comic"
-            android:textStyle="bold"
-            android:background="@color/colorAccent"
-            android:textColor="@color/grayLight"
-            android:text="Depart" />
-        <Button
-            android:id="@+id/btnPick_arr"
-            android:fontFamily="@font/comic"
-            android:layout_width="75dp"
-            android:layout_height="33dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginLeft="10dp"
-            android:textStyle="bold"
-            android:background="@color/colorAccent"
-            android:textColor="@color/grayLight"
-            android:layout_centerHorizontal="true"
-
-            android:text="Arrive" />
-        <Button
-            android:id="@+id/saveButton_map"
-            android:fontFamily="@font/comic"
-            android:background="@color/colorAccent"
-            android:layout_gravity="center_horizontal"
-            android:layout_width="75dp"
-            android:layout_height="33dp"
-            android:text="SAVE"
-            android:textColor="@color/grayLight"
-            android:textStyle="bold"
-            />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/fragment_map2_LL_1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="30dp"
         android:gravity="center"
-        android:orientation="horizontal"
-        android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true">
 
+        <Spinner
+            android:id="@+id/spinner2"
+            android:layout_width="250dp"
+            android:layout_height="38dp"
+            android:layout_centerHorizontal="true"
+            android:background="#808C8C8C"
+            android:fontFamily="@font/comic"
+            android:gravity="center"
+            android:textSize="13dp"
+            android:textStyle="bold"></Spinner>
         <Button
+            android:layout_marginLeft="10dp"
             android:id="@+id/btn_timer_start"
             android:fontFamily="@font/comic"
             android:textStyle="bold"
-            android:layout_width="75dp"
-            android:layout_height="33dp"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
             android:background="@color/colorAccent"
             android:textColor="@color/grayLight"
-            android:text="START" />
-
-        <Button
-            android:id="@+id/btn_timer_finish"
-            android:fontFamily="@font/comic"
-            android:textStyle="bold"
-            android:layout_width="75dp"
-            android:layout_height="33dp"
-            android:background="@color/colorAccent"
-            android:textColor="@color/grayLight"
-            android:layout_marginRight="10dp"
-            android:layout_marginLeft="10dp"
-            android:text="Stop" />
-        <Button
-            android:id="@+id/btn_timer_reset"
-            android:fontFamily="@font/comic"
-            android:textStyle="bold"
-            android:layout_width="75dp"
-            android:layout_height="33dp"
-            android:background="@color/colorAccent"
-            android:textColor="@color/grayLight"
-            android:text="Reset"/>
-
+            android:text="o" />
     </LinearLayout>
+
 </RelativeLayout>

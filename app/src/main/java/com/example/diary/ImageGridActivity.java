@@ -61,7 +61,7 @@ public class ImageGridActivity extends AppCompatActivity {
             requestPermission();
         }
 
-        Toast.makeText(this, image_info.toString(), Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, image_info.toString(), Toast.LENGTH_SHORT).show();
         btnRecord.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

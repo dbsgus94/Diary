@@ -4,8 +4,6 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
-import android.os.Handler;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
@@ -15,9 +13,6 @@ import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
-    private AlertDialog dialog;
-    private Handler mHandler = new Handler();
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -26,14 +21,12 @@ public class MainActivity extends AppCompatActivity {
         final Button meButton = (Button) findViewById(R.id.meButton);
         final Button diaryButton = (Button) findViewById(R.id.diaryButton);
         final Button friendButton = (Button) findViewById(R.id.friendButton);
-        final Button galleryButton =(Button) findViewById(R.id.galleryButton);
         final CardView card1 = (CardView) findViewById(R.id.card1);
         checkPermission();
 
         meButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //card1.setBackgroundColor(getResources().getColor(R.color.endPink));
                 Intent intent=getIntent();
                 String userID = intent.getExtras().getString("id_value");
 
@@ -48,31 +41,9 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent diaryButtonintent = new Intent(MainActivity.this, SelectDateActivity.class);
                 MainActivity.this.startActivity(diaryButtonintent);
-                //AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                /*dialog = builder.setMessage("카메라 -> 설정 -> 위치태그 허용").setPositiveButton("확인",null).create();
-                dialog.show();
-
-
-                final Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        Intent diaryButtonintent = new Intent(MainActivity.this, MapsActivity.class);
-                        MainActivity.this.startActivity(diaryButtonintent);
-                    }
-                },10);*/
-
-
-
             }
         });
-        galleryButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent galleryButtonIntent = new Intent(MainActivity.this, ImageGridActivity.class);
-                MainActivity.this.startActivity(galleryButtonIntent);
-            }
-        });
+
     }
     private void checkPermission() {
 

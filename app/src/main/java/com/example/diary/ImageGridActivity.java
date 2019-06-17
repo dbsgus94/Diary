@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.GridView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -24,6 +25,7 @@ import java.util.UUID;
 public class ImageGridActivity extends AppCompatActivity {
     private static ArrayList<String> image_info = new ArrayList<String>();
     private static String[] imageIDs;
+    private static String imageDate = "안들어옴";
     String pathSave = "";
     MediaRecorder mediaRecorder;
     MediaPlayer mediaPlayer;
@@ -31,31 +33,39 @@ public class ImageGridActivity extends AppCompatActivity {
     Button btnRecord,btnStopRecord,btnPlay,btnStop;
     Boolean isRecord = false ;
     Boolean isRecordStop = false;
+
+
+
     final int REQUEST_PERMISSION_CODE = 1000;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+
         image_info = getIntent().getStringArrayListExtra("image_info");
         int al_size = image_info.size();
         imageIDs = new String[al_size];
 
-        for(int i=0;i<al_size;i++)
-        {
+        for (int i = 0; i < al_size - 1; i++) {
             String info_img = image_info.get(i);
             String temp[] = info_img.split(":");
             imageIDs[i] = temp[0];
+            imageDate = temp[3];
         }
 
-        setContentView(R.layout.activity_image_grid);
-        GridView gridViewImages = (GridView)findViewById(R.id.gridViewImages);
-        ImageGridAdapter imageGridAdapter = new ImageGridAdapter(this,imageIDs);
-        gridViewImages.setAdapter(imageGridAdapter);
-        btnPlay = (Button)findViewById(R.id.btnplay);
-        btnRecord =(Button)findViewById(R.id.btnStartRecord);
-        btnStop =(Button)findViewById(R.id.btnSTOP);
-        btnStopRecord = (Button)findViewById(R.id.btnStopRecord);
 
+        setContentView(R.layout.activity_image_grid);
+        GridView gridViewImages = (GridView) findViewById(R.id.gridViewImages);
+        ImageGridAdapter imageGridAdapter = new ImageGridAdapter(this, imageIDs, imageDate);
+        gridViewImages.setAdapter(imageGridAdapter);
+        btnPlay = (Button) findViewById(R.id.btnplay);
+        btnRecord = (Button) findViewById(R.id.btnStartRecord);
+        btnStop = (Button) findViewById(R.id.btnSTOP);
+        btnStopRecord = (Button) findViewById(R.id.btnStopRecord);
+
+
+        TextView griddate = (TextView) findViewById(R.id.gridDate);
+        //griddate.setText(imageDate);
 
         if (!checkPermissionFromDevice()) {
             requestPermission();
@@ -72,7 +82,7 @@ public class ImageGridActivity extends AppCompatActivity {
                             .getAbsolutePath() + "/"
                             + UUID.randomUUID().toString() + "_audio_record.3gp";
                     setupMediaRecorder();
-                    //Toast.makeText(ImageGridActivity.this, "Recording..." + pathSave, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ImageGridActivity.this, "Recording..." , Toast.LENGTH_SHORT).show();
                     try {
                         mediaRecorder.prepare();
                         if (isRecord)

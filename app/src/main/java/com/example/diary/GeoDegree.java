@@ -30,7 +30,7 @@ public class GeoDegree {
         }
     }
 
-    ;
+
 
     private Float convertToDegree(String stringDMS) {
         Float result = null;

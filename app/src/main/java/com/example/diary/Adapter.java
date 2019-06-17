@@ -41,16 +41,14 @@ public class Adapter extends PagerAdapter
     }
 
     @Override
-    public  Object instantiateItem(ViewGroup container, int position)
+    public  Object instantiateItem(ViewGroup container, final int position)
     {
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View v = inflater.inflate(R.layout.activity_image,container,false);
         ImageView imageView =(ImageView) v.findViewById(R.id.imageView);
         mAttcher=new PhotoViewAttacher(imageView);
         EditText edittext= (EditText) v.findViewById(R.id.edittext);
-
-
-        Bitmap bmp = BitmapFactory.decodeFile(imageIDs[position_num]);
+        Bitmap bmp = BitmapFactory.decodeFile(imageIDs[position]);
         //bmp = Bitmap.createScaledBitmap(bmp,320,240,false);
         imageView.setImageBitmap(bmp);
 

@@ -109,6 +109,7 @@ public class MapsActivity extends AppCompatActivity
     private String select_date;
     private int cnt;
     private int cnt2;
+    private int cnt3;
     private ArrayList<String> marker_list = new ArrayList<>();
     // onRequestPermissionsResult에서 수신된 결과에서 ActivityCompat.requestPermissions를 사용한 퍼미션 요청을 구별하기 위해 사용됩니다.
     private static final int PERMISSIONS_REQUEST_CODE = 100;
@@ -237,6 +238,7 @@ public class MapsActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         context = MapsActivity.this;
         points = new ArrayList<LatLng>();
+
 
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
                 WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -478,6 +480,8 @@ public class MapsActivity extends AppCompatActivity
                 mGoogleMap.clear();
                 image_info.clear();
                 arrayPoints.clear();
+                marker_list.clear();
+
                 cnt = 0;
                 cnt2 = 0;
 
@@ -627,18 +631,45 @@ public class MapsActivity extends AppCompatActivity
                         }
                     });
                 }
+
+
+
+
+
+
+
+
+
+
+
+                ///***************************************************************************************
+                // 위에는 전체일정
+                // asdasd
+                // 아래는 날짜선택
+                //****************************************************************************************
+
+
+
+
+
+
+
+
+
                 else
                 {
-                    String loop_date = null;
+                    String loop_date;
                     loop_date = select_date;
                     float[] out_latlong;
 
                     images = getPathOfAllImages(loop_date);
                     for (String string : images) {
+
                         //String path_pho = images.get(0);
                         //Uri uri_pho = getUriFromPath(path_pho);
                         out_latlong = showExif(string);
                         if (out_latlong[0] != 0 && out_latlong[1] != 0) {
+                            cnt3 = cnt3 +1;
                             image_info.add(string + ":" + Float.toString(out_latlong[0]) + ":" + Float.toString(out_latlong[1]) + ":" + select_date);
                             //Toast.makeText(context, images.toString(), Toast.LENGTH_SHORT).show();
                             LatLng exifLatLng = new LatLng(out_latlong[0],out_latlong[1]);
@@ -681,11 +712,11 @@ public class MapsActivity extends AppCompatActivity
                                 Location.distanceBetween(Float.parseFloat(info1[1]), Float.parseFloat(info1[2]), Float.parseFloat(info2[1]), Float.parseFloat(info2[2]), results);
                                 float result = results[0];
                                 //Toast.makeText(MapsActivity.this, result + "m", Toast.LENGTH_SHORT).show();
-                                if(result >= 500)
+                                if(result >= 200)
                                 {
                                     mGoogleMap.addMarker(new MarkerOptions().anchor(0, 0)
                                             .position(exifLatLng)
-                                            .title(""+cnt2))
+                                            .title(""+(cnt2+1)))
                                             .setIcon(BitmapDescriptorFactory.fromBitmap(bmp));
                                     polylineOptions = new PolylineOptions();
                                     polylineOptions.color(Color.rgb(255, 113, 181));
@@ -702,49 +733,45 @@ public class MapsActivity extends AppCompatActivity
 
 
                                 }
-                                else if(images.size() == cnt2+1)
-                                {
-                                    marker_list.add(cnt+":"+k);
-                                }
                             }
 
 
                         }
                     }
+                    marker_list.add(cnt+":"+(cnt3));
+
 
                     Intent intent = new Intent(MapsActivity.this, ImageGridActivity.class);
                     mGoogleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                         @Override
                         public boolean onMarkerClick(Marker marker) {
                             //Toast.makeText(context, marker.getTitle(), Toast.LENGTH_SHORT).show();
-                            if(Integer.parseInt(marker.getTitle()) == cnt)
-                            {
-                                int index_num = Integer.parseInt(marker.getTitle());
-                                String[] temp = marker_list.get(index_num).split(":");
-                                int num_temp1 = Integer.parseInt(temp[1]);
+                            int index_num = Integer.parseInt(marker.getTitle());
+                            String[] temp = marker_list.get(index_num).split(":");
+                            int num_temp0 = Integer.parseInt(temp[0]);
+                            int num_temp1 = Integer.parseInt(temp[1]);
 
-                                ArrayList<String> temp_array= new ArrayList<String>();
-                                for(int i =num_temp1+1;i<=image_info.size()-1;i++){
+                            ArrayList<String> temp_array= new ArrayList<String>();
+                            temp_array.clear();
+                            if((marker_list.size()-1) == index_num) {
+                                Toast.makeText(MapsActivity.this, "나다", Toast.LENGTH_SHORT).show();
+                                if (num_temp0 == num_temp1) {
+                                    temp_array.add(image_info.get(image_info.size()-1));
+
+                                }
+                                else {
+                                    for(int i=num_temp0;i<=(image_info.size()-1);i++){
+                                        temp_array.add(image_info.get(i));
+                                    }
+                                }
+                            }
+                            else {
+                                for (int i = num_temp0; i <= num_temp1-1; i++) {
                                     temp_array.add(image_info.get(i));
                                 }
-                                intent.putStringArrayListExtra("image_info",temp_array);
-                                startActivity(intent);
                             }
-                            else
-                            {
-                                int index_num = Integer.parseInt(marker.getTitle());
-                                String[] temp = marker_list.get(index_num).split(":");
-                                int num_temp0 = Integer.parseInt(temp[0]);
-                                int num_temp1 = Integer.parseInt(temp[1]);
-
-                                ArrayList<String> temp_array= new ArrayList<String>();
-                                for(int i =num_temp0;i<=num_temp1;i++){
-                                    temp_array.add(image_info.get(i));
-                                }
-                                intent.putStringArrayListExtra("image_info",temp_array);
-                                startActivity(intent);
-
-                            }
+                            intent.putStringArrayListExtra("image_info",temp_array);
+                            startActivity(intent);
                             return false;
                         }
                     });

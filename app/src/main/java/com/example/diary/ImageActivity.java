@@ -15,9 +15,9 @@ public class ImageActivity extends AppCompatActivity{
 
     ViewPager viewPager;
     Adapter adapter;
-    String[] imageIDs;
-    String image_date;
-    int position;
+    String[] imageIDs=null;
+    String image_date=null;
+    int position=0;
 
 
 
@@ -27,7 +27,6 @@ public class ImageActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         //TextView imagedate = (TextView) findViewById(R.id.imageDate);
-
 
         imageIDs = getIntent().getExtras().getStringArray("image ID");
         position = getIntent().getExtras().getInt("position");
@@ -41,6 +40,7 @@ public class ImageActivity extends AppCompatActivity{
 
         adapter=new Adapter(this, imageIDs,position);
         viewPager.setAdapter(adapter);
+        viewPager.setCurrentItem(position);
 
 
 

@@ -24,8 +24,8 @@ import java.util.UUID;
 
 public class ImageGridActivity extends AppCompatActivity {
     private static ArrayList<String> image_info = new ArrayList<String>();
-    private static String[] imageIDs;
-    private static String imageDate = "안들어옴";
+    private static String[] imageIDs = null;
+    private static String imageDate = null;
     String pathSave = "";
     MediaRecorder mediaRecorder;
     MediaPlayer mediaPlayer;
@@ -46,7 +46,7 @@ public class ImageGridActivity extends AppCompatActivity {
         int al_size = image_info.size();
         imageIDs = new String[al_size];
 
-        for (int i = 0; i < al_size - 1; i++) {
+        for (int i = 0; i <= al_size - 1; i++) {
             String info_img = image_info.get(i);
             String temp[] = info_img.split(":");
             imageIDs[i] = temp[0];

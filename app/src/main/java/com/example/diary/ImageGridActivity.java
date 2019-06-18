@@ -26,7 +26,9 @@ public class ImageGridActivity extends AppCompatActivity {
     private static ArrayList<String> image_info = new ArrayList<String>();
     private static String[] imageIDs = null;
     private static String imageDate = null;
-    String pathSave = "";
+
+
+     String pathSave = "";
     MediaRecorder mediaRecorder;
     MediaPlayer mediaPlayer;
 

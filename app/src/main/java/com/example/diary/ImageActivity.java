@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.content.Intent;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -41,6 +42,9 @@ public class ImageActivity extends AppCompatActivity{
         adapter=new Adapter(this, imageIDs,position);
         viewPager.setAdapter(adapter);
         viewPager.setCurrentItem(position);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+
+
 
 
 

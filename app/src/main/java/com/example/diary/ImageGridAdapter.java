@@ -11,6 +11,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.graphics.Matrix;
+import android.support.media.ExifInterface;
 
 public class ImageGridAdapter extends BaseAdapter {
 
@@ -36,6 +38,18 @@ public class ImageGridAdapter extends BaseAdapter {
     public long getItemId(int position) {
         return position;
     }
+
+    public int exifOrientationToDegrees(int exifOrientation) {
+        if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_90) {
+            return 90;
+        } else if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_180) {
+            return 180;
+        } else if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_270) {
+            return 270;
+        }
+        return 0;
+    }
+
     public View getView(int position, View convertView, ViewGroup parent) {
         ImageView imageView = null;
 
@@ -46,6 +60,23 @@ public class ImageGridAdapter extends BaseAdapter {
             //bmp = Bitmap.createScaledBitmap(bmp,320,240,false);
             imageView = new ImageView(context);
             imageView.setAdjustViewBounds(true);
+            imageView.setImageBitmap(bmp);
+
+            try {
+                // 이미지를 상황에 맞게 회전시킨다
+                ExifInterface exif = new ExifInterface(imageIDs[position]);
+                int exifOrientation = exif.getAttributeInt(
+                        ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+                int exifDegree = exifOrientationToDegrees(exifOrientation);
+
+                Matrix mat = new Matrix();
+                mat.postRotate(exifDegree);
+                bmp = Bitmap.createBitmap(bmp, 0, 0, bmp.getWidth(), bmp.getHeight(), mat, true);
+
+
+            } catch (Exception e) {
+
+            }
             imageView.setImageBitmap(bmp);
             ImageClickListener imageViewClickListener = new ImageClickListener(context, imageIDs, position, image_date);
             imageView.setOnClickListener(imageViewClickListener);

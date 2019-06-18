@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:orientation="vertical">
 
     <LinearLayout
@@ -12,32 +10,52 @@
         android:background="@color/colorAccent">
 
         <TextView
-            android:paddingRight="30dp"
+            android:id="@+id/imageDate"
             android:layout_width="match_parent"
             android:layout_height="40dp"
-            android:gravity="center"
-            android:textAlignment="center"
+            android:layout_marginRight="50dp"
             android:fontFamily="@font/comic"
+            android:gravity="center"
+            android:text="충무로"
+            android:textAlignment="center"
             android:textColor="#fafafa"
             android:textSize="15dp"
-            android:textStyle="bold"
-            android:text = "충무로"
-            android:id="@+id/imageDate"/>
+            android:textStyle="bold" />
     </LinearLayout>
 
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="match_parent"
-        android:layout_height="400dp"
+        android:layout_height="350dp"
         android:src="@drawable/ic_launcher_background" />
-
-    <EditText
-        android:id="@+id/edittext"
+    <Button
+        android:background="@color/colorAccent"
+        android:id="@+id/postBtn"
+        android:layout_width="75dp"
+        android:layout_marginTop="10dp"
+        android:layout_height="33dp"
+        android:text="게시"
+        android:textColor="@color/grayLight"
+        android:textStyle="bold"
+        />
+    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:fillViewport="false"
+    >
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/comic"
-        android:hint="내용을 입력해 주세요"  />
+        >
+        <EditText
+            android:id="@+id/edittext"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/comic"
+            android:hint="내용을 입력해 주세요" />
+</LinearLayout>
 
-
+    </ScrollView>
 
 </LinearLayout>

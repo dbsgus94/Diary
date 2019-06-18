@@ -72,6 +72,7 @@ import java.util.Locale;
 import android.app.Activity;
 import android.support.media.ExifInterface;
 import android.widget.TextView;
+import android.graphics.Matrix;
 
 import static com.android.volley.VolleyLog.setTag;
 
@@ -167,6 +168,17 @@ public class MapsActivity extends AppCompatActivity
         return lat_long;
     }
 
+    public int exifOrientationToDegrees(int exifOrientation) {
+        if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_90) {
+            return 90;
+        } else if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_180) {
+            return 180;
+        } else if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_270) {
+            return 270;
+        }
+        return 0;
+    }
+
     private String getRealPathFromURI(Uri uri) {
         String filePath = "";
         String wholeID = DocumentsContract.getDocumentId(uri);
@@ -237,6 +249,7 @@ public class MapsActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         context = MapsActivity.this;
+        points = new ArrayList<LatLng>();
         points = new ArrayList<LatLng>();
 
 
@@ -533,6 +546,21 @@ public class MapsActivity extends AppCompatActivity
                                 color.setTextSize(35);
                                 color.setColor(Color.BLACK);
                                 Bitmap resize_bmp = resizeBitmapImg(BitmapFactory.decodeFile(photoPath));
+                                try {
+                                    // 이미지를 상황에 맞게 회전시킨다
+                                    ExifInterface exif = new ExifInterface(photoPath);
+                                    int exifOrientation = exif.getAttributeInt(
+                                            ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+                                    int exifDegree = exifOrientationToDegrees(exifOrientation);
+
+                                    Matrix mat = new Matrix();
+                                    mat.postRotate(exifDegree);
+                                    resize_bmp = Bitmap.createBitmap(resize_bmp, 0, 0,resize_bmp.getWidth(),resize_bmp.getHeight(), mat, true);
+
+
+                                } catch (Exception e) {
+
+                                }
                                 canvas1.drawBitmap(resize_bmp, resize_bmp.getHeight()*(1/20)+11, resize_bmp.getWidth()*(1/20)+11, null);
 
                                 String [] info1;

@@ -30,7 +30,8 @@
         <activity android:name=".ImageGridActivity" />
         <activity
             android:name=".ImageActivity"
-            android:label="Selected Image" />
+            android:label="Selected Image"
+            />
 
         <uses-library
             android:name="org.apache.http.legacy"

@@ -160,14 +160,14 @@
         </LinearLayout>
     </LinearLayout>
     <Button
-        android:id="@+id/saveButton"
-        android:background="@drawable/button_style"
-        android:layout_marginTop="50dp"
-        android:layout_gravity="center_horizontal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="프로필 저장"
-        android:textColor="@color/grayLight"
-        android:textStyle="bold"
-        />
+    android:id="@+id/saveButton"
+    android:background="@drawable/button_style"
+    android:layout_marginTop="50dp"
+    android:layout_gravity="center_horizontal"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="프로필 저장"
+    android:textColor="@color/grayLight"
+    android:textStyle="bold"
+    />
 </LinearLayout>

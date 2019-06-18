@@ -323,7 +323,7 @@ public class MapsActivity extends AppCompatActivity
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 if(arrayList.get(i) == "전체 일정")
                 {
-                    select_date = "1994-06-06";
+                    select_date = "전체 일정";
                 }
                 else {
                     select_date = arrayList.get(i);
@@ -331,7 +331,7 @@ public class MapsActivity extends AppCompatActivity
             }
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
-                select_date = "1994-06-06";
+                select_date = "전체 일정";
             }
         });
 
@@ -500,7 +500,7 @@ public class MapsActivity extends AppCompatActivity
                 cnt3 = 0;
 
                 int print_diffDays;
-                if (select_date=="1994-06-06"){
+                if (select_date=="전체 일정"){
                     print_diffDays = doDiffOfDate(pick_date_dpt, pick_date_arr);
 
                     for (int i = 0; i <=print_diffDays; i++) {
@@ -535,11 +535,11 @@ public class MapsActivity extends AppCompatActivity
                             out_latlong = showExif(string);
                             if (out_latlong[0] != 0 && out_latlong[1] != 0) {
                                 cnt3 = cnt3+1;
-                                image_info.add(string + ":" + Float.toString(out_latlong[0]) + ":" + Float.toString(out_latlong[1]) + ":" + select_date);
+                                image_info.add(string + ":" + Float.toString(out_latlong[0]) + ":" + Float.toString(out_latlong[1]) + ":" + loop_date);
                                 //Toast.makeText(context, images.toString(), Toast.LENGTH_SHORT).show();
                                 LatLng exifLatLng = new LatLng(out_latlong[0],out_latlong[1]);
                                 Bitmap.Config conf = Bitmap.Config.ARGB_8888;
-                                Bitmap bmp = Bitmap.createBitmap(220, targetHeight+20, conf);
+                                Bitmap bmp = Bitmap.createBitmap(170, 170, conf);
                                 Canvas canvas1 = new Canvas(bmp);
                                 canvas1.drawColor(Color.WHITE);
                                 Paint color = new Paint();
@@ -561,7 +561,7 @@ public class MapsActivity extends AppCompatActivity
                                 } catch (Exception e) {
 
                                 }
-                                canvas1.drawBitmap(resize_bmp, resize_bmp.getHeight()*(1/20)+11, resize_bmp.getWidth()*(1/20)+11, null);
+                                canvas1.drawBitmap(resize_bmp, resize_bmp.getHeight()*(1/20)+10, resize_bmp.getWidth()*(1/20)+10, null);
 
                                 String [] info1;
                                 String [] info2;
@@ -635,7 +635,7 @@ public class MapsActivity extends AppCompatActivity
                             ArrayList<String> temp_array= new ArrayList<String>();
                             temp_array.clear();
                             if((marker_list.size()-1) == index_num) {
-                                Toast.makeText(MapsActivity.this, "나다", Toast.LENGTH_SHORT).show();
+                                //Toast.makeText(MapsActivity.this, "나다", Toast.LENGTH_SHORT).show();
                                 if (num_temp0 == num_temp1) {
                                     temp_array.add(image_info.get(image_info.size()-1));
 
@@ -651,6 +651,9 @@ public class MapsActivity extends AppCompatActivity
                                     temp_array.add(image_info.get(i));
                                 }
                             }
+                            String title_name = Integer.toString(index_num);
+                            //Toast.makeText(MapsActivity.this, title_name, Toast.LENGTH_SHORT).show();
+                            intent.putExtra("marker_title",title_name);
                             intent.putStringArrayListExtra("image_info",temp_array);
                             startActivity(intent);
                             return false;
@@ -689,6 +692,7 @@ public class MapsActivity extends AppCompatActivity
                     float[] out_latlong;
 
                     images = getPathOfAllImages(loop_date);
+
                     for (String string : images) {
 
                         //String path_pho = images.get(0);
@@ -700,17 +704,35 @@ public class MapsActivity extends AppCompatActivity
                             //Toast.makeText(context, images.toString(), Toast.LENGTH_SHORT).show();
                             LatLng exifLatLng = new LatLng(out_latlong[0],out_latlong[1]);
                             Bitmap.Config conf = Bitmap.Config.ARGB_8888;
-                            Bitmap bmp = Bitmap.createBitmap(220, targetHeight+20, conf);
+                            Bitmap bmp = Bitmap.createBitmap(170, 170, conf);
                             Canvas canvas1 = new Canvas(bmp);
+
                             canvas1.drawColor(Color.WHITE);
                             Paint color = new Paint();
                             color.setTextSize(35);
                             color.setColor(Color.BLACK);
                             Bitmap resize_bmp = resizeBitmapImg(BitmapFactory.decodeFile(photoPath));
-                            canvas1.drawBitmap(resize_bmp, resize_bmp.getHeight()*(1/20), resize_bmp.getWidth()*(1/20), null);
+
+                            try {
+                                // 이미지를 상황에 맞게 회전시킨다
+                                ExifInterface exif = new ExifInterface(photoPath);
+                                int exifOrientation = exif.getAttributeInt(
+                                        ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+                                int exifDegree = exifOrientationToDegrees(exifOrientation);
+
+                                Matrix mat = new Matrix();
+                                mat.postRotate(exifDegree);
+                                resize_bmp = Bitmap.createBitmap(resize_bmp, 0, 0,resize_bmp.getWidth(),resize_bmp.getHeight(), mat, true);
+
+
+                            } catch (Exception e) {
+
+                            }
+                            canvas1.drawBitmap(resize_bmp, resize_bmp.getHeight()*(1/20)+10, resize_bmp.getWidth()*(1/20)+10, null);
 
                             String [] info1;
                             String [] info2;
+
 
                             if (image_info.size() == 1)
                             {
@@ -780,7 +802,7 @@ public class MapsActivity extends AppCompatActivity
                             ArrayList<String> temp_array= new ArrayList<String>();
                             temp_array.clear();
                             if((marker_list.size()-1) == index_num) {
-                                Toast.makeText(MapsActivity.this, "나다", Toast.LENGTH_SHORT).show();
+                                //Toast.makeText(MapsActivity.this, "나다", Toast.LENGTH_SHORT).show();
                                 if (num_temp0 == num_temp1) {
                                     temp_array.add(image_info.get(image_info.size()-1));
 
@@ -796,6 +818,9 @@ public class MapsActivity extends AppCompatActivity
                                     temp_array.add(image_info.get(i));
                                 }
                             }
+                            String title_name = Integer.toString(index_num);
+                            //Toast.makeText(MapsActivity.this, title_name, Toast.LENGTH_SHORT).show();
+                            intent.putExtra("marker_title",title_name);
                             intent.putStringArrayListExtra("image_info",temp_array);
                             startActivity(intent);
                             return false;
@@ -828,7 +853,7 @@ public class MapsActivity extends AppCompatActivity
 
     static public Bitmap resizeBitmapImg(Bitmap original) {
 
-        int resizeWidth = 197;
+        int resizeWidth = 150;
 
         double aspectRatio = (double) original.getHeight() / (double) original.getWidth();
         targetHeight = (int) (resizeWidth * aspectRatio);
@@ -838,6 +863,8 @@ public class MapsActivity extends AppCompatActivity
         }
         return result;
     }
+
+
 
 
     @Override

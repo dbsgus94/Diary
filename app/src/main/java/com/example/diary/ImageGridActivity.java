@@ -26,9 +26,11 @@ public class ImageGridActivity extends AppCompatActivity {
     private static ArrayList<String> image_info = new ArrayList<String>();
     private static String[] imageIDs = null;
     private static String imageDate = null;
+    private static String[] imageLat = null;
+    private static String[] imageLng = null;
+    private static String marker_title = null;
 
-
-     String pathSave = "";
+    String pathSave = "";
     MediaRecorder mediaRecorder;
     MediaPlayer mediaPlayer;
 
@@ -45,20 +47,25 @@ public class ImageGridActivity extends AppCompatActivity {
 
 
         image_info = getIntent().getStringArrayListExtra("image_info");
+        marker_title = getIntent().getExtras().getString("marker_title");
         int al_size = image_info.size();
         imageIDs = new String[al_size];
+        imageLat = new String[al_size];
+        imageLng = new String[al_size];
 
         for (int i = 0; i <= al_size - 1; i++) {
             String info_img = image_info.get(i);
             String temp[] = info_img.split(":");
             imageIDs[i] = temp[0];
+            imageLat[i] = temp[1];
+            imageLng[i] = temp[2];
             imageDate = temp[3];
         }
 
 
         setContentView(R.layout.activity_image_grid);
         GridView gridViewImages = (GridView) findViewById(R.id.gridViewImages);
-        ImageGridAdapter imageGridAdapter = new ImageGridAdapter(this, imageIDs, imageDate);
+        ImageGridAdapter imageGridAdapter = new ImageGridAdapter(this, imageIDs,imageLat,imageLng, imageDate, marker_title);
         gridViewImages.setAdapter(imageGridAdapter);
         btnPlay = (Button) findViewById(R.id.btnplay);
         btnRecord = (Button) findViewById(R.id.btnStartRecord);

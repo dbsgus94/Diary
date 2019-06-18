@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@drawable/splash_base" />
+    <item android:top="200dp"
+        android:bottom="200dp"
+        android:gravity="center_horizontal">
+        <bitmap
+            android:src="@drawable/diary23"
+            android:gravity="top"
+            android:text = "너와 나의 여행일기"
+            android:textSize="00dp"
+            >
+        </bitmap>
+    </item>
+</layer-list>

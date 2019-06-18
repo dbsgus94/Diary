@@ -17,7 +17,10 @@ public class ImageActivity extends AppCompatActivity{
     ViewPager viewPager;
     Adapter adapter;
     String[] imageIDs=null;
+    String[] imageLat=null;
+    String[] imageLng=null;
     String image_date=null;
+    String marker_title=null;
     int position=0;
 
 
@@ -30,7 +33,10 @@ public class ImageActivity extends AppCompatActivity{
         //TextView imagedate = (TextView) findViewById(R.id.imageDate);
 
         imageIDs = getIntent().getExtras().getStringArray("image ID");
+        imageLat = getIntent().getExtras().getStringArray("imageLat");
+        imageLng = getIntent().getExtras().getStringArray("imageLng");
         position = getIntent().getExtras().getInt("position");
+        marker_title = getIntent().getExtras().getString("marker_title");
         image_date = getIntent().getExtras().getString("image_date");
 
 
@@ -39,7 +45,7 @@ public class ImageActivity extends AppCompatActivity{
         viewPager=(ViewPager)findViewById(R.id.vvv);
         //imagedate.setText(image_date);
 
-        adapter=new Adapter(this, imageIDs,position);
+        adapter=new Adapter(this, imageIDs, position, imageLat, imageLng, image_date, marker_title);
         viewPager.setAdapter(adapter);
         viewPager.setCurrentItem(position);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);

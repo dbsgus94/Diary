@@ -13,7 +13,6 @@
             android:id="@+id/imageDate"
             android:layout_width="match_parent"
             android:layout_height="40dp"
-            android:layout_marginRight="50dp"
             android:fontFamily="@font/comic"
             android:gravity="center"
             android:text="충무로"
@@ -33,28 +32,29 @@
         android:id="@+id/postBtn"
         android:layout_width="75dp"
         android:layout_marginTop="10dp"
+        android:layout_marginLeft="5dp"
         android:layout_height="33dp"
         android:text="게시"
         android:textColor="@color/grayLight"
         android:textStyle="bold"
         />
     <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:fillViewport="false"
-    >
-    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:fillViewport="false"
         >
-        <EditText
-            android:id="@+id/edittext"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/comic"
-            android:hint="내용을 입력해 주세요" />
-</LinearLayout>
+            >
+            <EditText
+                android:id="@+id/edittext"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/comic"
+                android:hint="내용을 입력해 주세요" />
+        </LinearLayout>
 
     </ScrollView>
 

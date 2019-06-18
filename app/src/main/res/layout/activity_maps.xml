@@ -44,4 +44,23 @@
             android:text="o" />
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_gravity="bottom"
+        android:gravity="center">
+
+        <Button
+            android:layout_marginTop="550dp"
+            android:id="@+id/mapsSave"
+            android:layout_width="75dp"
+            android:layout_height="33dp"
+            android:background="@color/colorAccent"
+            android:text="SAVE"
+            android:textColor="@color/grayLight"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+
 </RelativeLayout>

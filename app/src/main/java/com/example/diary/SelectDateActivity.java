@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,7 +23,10 @@ public class SelectDateActivity extends AppCompatActivity{
 
     private static String pick_date_dpt = "윤현";
     private static String pick_date_arr = "현윤";
+    private static String location_name = "김윤현";
+    private static String userID = null;
 
+    EditText textlocation;
     Button mBtn_dpt;
     Button mBtn_arr;
     Button mBtn_save;
@@ -36,15 +40,20 @@ public class SelectDateActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_day_select);
-
         pick_date_dpt = "윤현";
         pick_date_arr = "현윤";
+
+        textlocation = (EditText) findViewById(R.id.location);
         context = SelectDateActivity.this;
         dpt_text = (TextView) findViewById(R.id.dpt_date);
         arr_text = (TextView) findViewById(R.id.arr_date);
         mBtn_dpt = (Button) findViewById(R.id.btnPick_dpt);
         mBtn_arr = (Button) findViewById(R.id.btnPick_arr);
         mBtn_save =(Button) findViewById(R.id.dateSave);
+
+        Intent intent=getIntent();
+        userID = intent.getExtras().getString("id_value");
+
         mBtn_dpt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -70,7 +79,7 @@ public class SelectDateActivity extends AppCompatActivity{
                 }, year, month, day);
                 dpd_dpt.show();
 
-            }
+        }
         });
 
         mBtn_arr.setOnClickListener(new View.OnClickListener() {
@@ -97,13 +106,9 @@ public class SelectDateActivity extends AppCompatActivity{
                     }
                 }, year, month, day);
                 dpd_arr.show();
+
             }
         });
-
-
-
-
-
         mBtn_save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -113,36 +118,46 @@ public class SelectDateActivity extends AppCompatActivity{
                     SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd",Locale.KOREA);
                     Date beginDate = (Date) formatter.parse(pick_date_dpt);
                     Date endDate = (Date) formatter.parse(pick_date_arr);
+                    location_name=textlocation.getText().toString();
                     begin = beginDate.getTime();
                     end = endDate.getTime();
 
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
+                //예외처리 해줘야해
 
-                if(pick_date_dpt.equals("윤현") && pick_date_arr.equals("현윤"))
+                Toast.makeText(context, location_name, Toast.LENGTH_SHORT).show();
+
+                if(location_name=="김윤현")
                 {
-                    Toast.makeText(SelectDateActivity.this, "출발 날짜와 도착 날짜를 선택해주세요", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "일기의 제목을 입력해주세요.", Toast.LENGTH_SHORT).show();
                 }
-                else if(pick_date_arr.equals("현윤"))
+                else if(pick_date_dpt=="윤현" && pick_date_arr=="현윤")
                 {
-                    Toast.makeText(SelectDateActivity.this, "도착 날짜를 선택해주세요", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SelectDateActivity.this, "날짜를 입력해주세요", Toast.LENGTH_SHORT).show();
                 }
-                else if(pick_date_dpt.equals("윤현"))
-                {
-                    Toast.makeText(SelectDateActivity.this, "출발 날짜를 선택해주세요", Toast.LENGTH_SHORT).show();
+                else if(pick_date_dpt=="윤현") {
+                    Toast.makeText(SelectDateActivity.this, "출발 날짜를 입력해주세요", Toast.LENGTH_SHORT).show();
+                }
+                else if (pick_date_arr=="현윤") {
+                    Toast.makeText(SelectDateActivity.this, "도착 날짜를 입력해주세요", Toast.LENGTH_SHORT).show();
                 }
                 else {
                     if (end >= begin) {
                         Intent diaryButtonintent = new Intent(context, MapsActivity.class);
                         diaryButtonintent.putExtra("pick_date_dpt", pick_date_dpt);
                         diaryButtonintent.putExtra("pick_date_arr", pick_date_arr);
+                        diaryButtonintent.putExtra("location_name",location_name);
+                        diaryButtonintent.putExtra("id_value",userID);
                         context.startActivity(diaryButtonintent);
                     } else if (end < begin) {
                         Toast.makeText(SelectDateActivity.this, "도착 날짜는 출발 날짜보다 이전일 수 없습니다.", Toast.LENGTH_SHORT).show();
                     }
                 }
             }
+
+
         });
     }
 }

@@ -37,6 +37,7 @@ public class Adapter extends PagerAdapter
     private String[] imageIDs;
     private String[] imageLat_here;
     private String[] imageLng_here;
+    private String[] imaComment;
     private String image_date;
     private int position_num;
     private AlertDialog dialog;
@@ -44,7 +45,8 @@ public class Adapter extends PagerAdapter
     private String marker_title;
 
 
-    public Adapter(Context context, String[] imageIDs, int position, String[] imageLat, String[] imageLng, String image_date, String marker_title)
+
+    public Adapter(Context context, String[] imageIDs, int position, String[] imageLat, String[] imageLng, String image_date, String marker_title,String[] imaComment)
     {
         this.context=context;
         this.imageIDs =imageIDs;
@@ -53,7 +55,7 @@ public class Adapter extends PagerAdapter
         this.imageLng_here = imageLng;
         this.image_date = image_date;
         this.marker_title = marker_title;
-
+        this.imaComment = imaComment;
     }
 
     public int exifOrientationToDegrees(int exifOrientation) {
@@ -88,7 +90,7 @@ public class Adapter extends PagerAdapter
         Button postBtn = (Button) v.findViewById(R.id.postBtn);
         EditText edittext= (EditText) v.findViewById(R.id.edittext);
         BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inSampleSize = 2;
+        options.inSampleSize = 4;
         Bitmap bmp = BitmapFactory.decodeFile(imageIDs[position],options);
         imageSource = getStringImage(bmp);
 
@@ -99,6 +101,8 @@ public class Adapter extends PagerAdapter
         String markerNum = marker_title;
         String imageLat = imageLat_here[position];
         String imageLng = imageLng_here[position];
+
+        edittext.setText(imaComment[position]);
 
 
 
@@ -133,7 +137,7 @@ public class Adapter extends PagerAdapter
                 //Toast.makeText(context, marker_title, Toast.LENGTH_SHORT).show();
 
 
-                ImageRequest imageRequest = new ImageRequest(imageComment, imageDate, imageTime, markerNum, imageLat, imageLng, imageSource, responseListener);
+                ImageRequest imageRequest = new ImageRequest(imageComment, imageDate, imageTime, markerNum, imageLat, imageLng, imageIDs[position], responseListener);
                 RequestQueue queue = Volley.newRequestQueue(context);
                 queue.add(imageRequest);
             }
@@ -179,10 +183,4 @@ public class Adapter extends PagerAdapter
         return encodedImage;
     }
 
-
-    public Bitmap getImage(String s) {
-        byte[] bytes_image = Base64.decode(s, Base64.DEFAULT);
-        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes_image, 0, bytes_image.length);
-        return bitmap;
-    }
 }

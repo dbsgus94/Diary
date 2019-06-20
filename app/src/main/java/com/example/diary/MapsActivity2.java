@@ -78,11 +78,11 @@ import android.support.media.ExifInterface;
 import android.widget.TextView;
 import android.graphics.Matrix;
 
-import org.json.JSONObject;
+import org.json.JSONArray;
 
 import static com.android.volley.VolleyLog.setTag;
 
-public class MapsActivity extends AppCompatActivity
+public class MapsActivity2 extends AppCompatActivity
         implements OnMapReadyCallback, ActivityCompat.OnRequestPermissionsResultCallback {
     private static int targetHeight;
     private static final int RQS_OPEN_IMAGE = 1;
@@ -130,8 +130,22 @@ public class MapsActivity extends AppCompatActivity
     public static final PatternItem DASH = new Dash(PATTERN_DASH_LENGTH_PX);
     public static final PatternItem GAP = new Gap(PATTERN_GAP_LENGTH_PX);
     public static final List<PatternItem> PATTERN_POLYGON_ALPHA = Arrays.asList(GAP, DASH);
-    private static String userID=null;
+
     private static String location_name=null;
+
+    private String getDepart = null;
+    private String getArrive = null;
+
+    private static ArrayList<String> db_imageComment= new ArrayList<String>();
+    private static ArrayList<String> db_imageTime= new ArrayList<String>();
+    private static ArrayList<String> db_markerNum= new ArrayList<String>();
+    private static ArrayList<String> db_imageLat= new ArrayList<String>();
+    private static ArrayList<String> db_imageLng= new ArrayList<String>();
+    private static ArrayList<String> db_imageSource= new ArrayList<String>();
+    private static String test_v =null;
+
+
+
 
 
     // 앱을 실행하기 위해 필요한 퍼미션을 정의합니다.
@@ -256,17 +270,19 @@ public class MapsActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        context = MapsActivity.this;
+        context = MapsActivity2.this;
         points = new ArrayList<LatLng>();
         points = new ArrayList<LatLng>();
 
-        Intent intent=getIntent();
-        userID = intent.getExtras().getString("id_value");
+
+        getDepart = getIntent().getExtras().getString("depart");
+        getArrive = getIntent().getExtras().getString("arrive");
+
 
 
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
                 WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        setContentView(R.layout.activity_maps);
+        setContentView(R.layout.activity_maps2);
 
         MapsInitializer.initialize(getApplicationContext());
 
@@ -292,9 +308,12 @@ public class MapsActivity extends AppCompatActivity
         //추가한 부분
 
 
-        pick_date_dpt = getIntent().getExtras().getString("pick_date_dpt");
-        pick_date_arr = getIntent().getExtras().getString("pick_date_arr");
-        location_name=getIntent().getExtras().getString("location_name");
+        //pick_date_dpt = getIntent().getExtras().getString("pick_date_dpt");
+        //pick_date_arr = getIntent().getExtras().getString("pick_date_arr");
+        pick_date_dpt = getDepart;
+        pick_date_arr = getArrive;
+
+
 
         int diffDays = doDiffOfDate(pick_date_dpt, pick_date_arr);
         //Toast.makeText(MapsActivity.this, ""+diffDays, Toast.LENGTH_SHORT).show();
@@ -481,7 +500,7 @@ public class MapsActivity extends AppCompatActivity
                     public void onClick(View view) {
 
                         // 3-3. 사용자게에 퍼미션 요청을 합니다. 요청 결과는 onRequestPermissionResult에서 수신됩니다.
-                        ActivityCompat.requestPermissions(MapsActivity.this, REQUIRED_PERMISSIONS,
+                        ActivityCompat.requestPermissions(MapsActivity2.this, REQUIRED_PERMISSIONS,
                                 PERMISSIONS_REQUEST_CODE);
                     }
                 }).show();
@@ -501,47 +520,6 @@ public class MapsActivity extends AppCompatActivity
         mGoogleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
 
         btn_timer_start = (Button) findViewById(R.id.btn_timer_start);
-        Button mapsSave = (Button) findViewById(R.id.mapsSave);
-
-
-        mapsSave.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent mapsSaveintent = new Intent(MapsActivity.this,ListviewActivity.class);
-                mapsSaveintent.putExtra("pick_date_arr",pick_date_arr);
-                mapsSaveintent.putExtra("pick_date_dpt",pick_date_dpt);
-                mapsSaveintent.putExtra("location_name",location_name);
-                MapsActivity.this.startActivity(mapsSaveintent);
-
-                Response.Listener<String> responseListener = new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        try {
-                            JSONObject jsonResponse = new JSONObject(response);
-                            boolean success = jsonResponse.getBoolean("success");
-
-                            if(success) {
-                                AlertDialog.Builder builder = new AlertDialog.Builder(MapsActivity.this);
-                                Toast.makeText(MapsActivity.this, "전체 일기가 저장되었습니다.", Toast.LENGTH_SHORT).show();
-                            }
-                            else {
-                                AlertDialog.Builder builder = new AlertDialog.Builder(MapsActivity.this);
-                                Toast.makeText(MapsActivity.this, "일기 등록에 실패했습니다.", Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                        catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                };
-                ListviewRequest listviewRequest = new ListviewRequest(location_name,pick_date_dpt,pick_date_arr,userID,responseListener);
-                RequestQueue queue = Volley.newRequestQueue(MapsActivity.this);
-                queue.add(listviewRequest);
-
-
-            }
-        });
-
 
         btn_timer_start.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -551,13 +529,16 @@ public class MapsActivity extends AppCompatActivity
                 arrayPoints.clear();
                 marker_list.clear();
 
+
                 cnt = 0;
                 cnt2 = 0;
                 cnt3 = 0;
 
                 int print_diffDays;
+
                 if (select_date=="전체 일정"){
                     print_diffDays = doDiffOfDate(pick_date_dpt, pick_date_arr);
+
 
                     for (int i = 0; i <=print_diffDays; i++) {
                         String loop_date = null;
@@ -582,25 +563,94 @@ public class MapsActivity extends AppCompatActivity
                             loop_date = dateFormat.format(cal.getTime());
 
                         }
+
+
+                        Response.Listener<String> responseLister = new Response.Listener<String>() {
+                            @Override
+                            public void onResponse(String response) {
+                                try {
+                                    JSONArray jsonArray = new JSONArray(response);
+
+                                    ArrayList<String> listdata = new ArrayList<String>();
+                                    if (jsonArray != null) {
+                                        for (int i=0;i<jsonArray.length();i++){
+                                            listdata.add(jsonArray.getString(i));
+                                        }
+                                    }
+
+
+                                    String [] temp_split = null;
+                                    String [] arr_imageComment= null;
+                                    String [] arr_imageTime= null;
+                                    String [] arr_markerNum= null;
+                                    String [] arr_imageLat= null;
+                                    String [] arr_imageLng= null;
+                                    String [] arr_imageSource= null;
+
+                                    String replace_Comment;
+                                    String replace_Time;
+                                    String replace_Num;
+                                    String replace_Lat;
+                                    String replace_Lng;
+                                    String replace_Source;
+
+
+                                    for(int i=0;i<listdata.size();i++)
+                                    {
+                                        temp_split = listdata.get(i).split(",");
+                                        arr_imageComment=temp_split[1].split(":");
+                                        arr_imageTime=temp_split[2].split(":");
+                                        arr_markerNum=temp_split[3].split(":");
+                                        arr_imageLat=temp_split[4].split(":");
+                                        arr_imageLng=temp_split[5].split(":");
+                                        arr_imageSource = temp_split[6].split(":");
+
+
+                                        replace_Comment = arr_imageComment[1].replaceAll("\"","");
+                                        replace_Time = arr_imageTime[1].replaceAll("\"","");
+                                        replace_Num = arr_markerNum[1].replaceAll("\"","");
+                                        replace_Lat = arr_imageLat[1].replaceAll("\"","");
+                                        replace_Lng = arr_imageLng[1].replaceAll("\"","");
+                                        replace_Source = arr_imageSource[1].replaceAll("\"","");
+                                        replace_Source = replace_Source.replaceAll("\\\\","");
+
+
+                                        //Toast.makeText(MapsActivity2.this,replace_Source, Toast.LENGTH_SHORT).show();
+
+                                        db_imageComment.add(replace_Comment);
+                                        db_imageTime.add(replace_Time);
+                                        db_markerNum.add(replace_Num);
+                                        db_imageLat.add(replace_Lat);
+                                        db_imageLng.add(replace_Lng);
+                                        db_imageSource.add(replace_Source);
+
+
+                                    }Toast.makeText(MapsActivity2.this, db_imageComment.toString(), Toast.LENGTH_SHORT).show();
+                                    //test_v = db_imageComment.get(1);
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        };
+                        Maps2Request maps2Request = new Maps2Request(loop_date, responseLister);
+                        RequestQueue queue = Volley.newRequestQueue(MapsActivity2.this);
+                        queue.add(maps2Request);
+
+
+                        //Toast.makeText(MapsActivity2.this, db_imageComment.get(1), Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(MapsActivity2.this,""+jsonResponse, Toast.LENGTH_SHORT).show();
+
+
                         float[] out_latlong;
-                        ArrayList<String> rev_arr =new ArrayList<>();
-
-                        images = getPathOfAllImages(loop_date);
-                        rev_arr.clear();
-                        for (int j=0;j<images.size();j++)
-                        {
-                            int size_of = images.size()-1;
-                            rev_arr.add(images.get(size_of-j));
-
-                        }
-
-                        for (String string : rev_arr) {
+                        int flagnum = 0;
+                        for (String string : db_imageSource) {
                             //String path_pho = images.get(0);s
                             //Uri uri_pho = getUriFromPath(path_pho);
                             out_latlong = showExif(string);
                             if (out_latlong[0] != 0 && out_latlong[1] != 0) {
                                 cnt3 = cnt3+1;
-                                image_info.add(string + ":" + Float.toString(out_latlong[0]) + ":" + Float.toString(out_latlong[1]) + ":" + loop_date+ ":" +" ");
+                                image_info.add(string + ":" + Float.toString(out_latlong[0]) + ":" + Float.toString(out_latlong[1]) + ":" + loop_date + ":" +db_imageComment.get(flagnum));
+                                flagnum = flagnum+1;
                                 //Toast.makeText(context, images.toString(), Toast.LENGTH_SHORT).show();
                                 LatLng exifLatLng = new LatLng(out_latlong[0],out_latlong[1]);
                                 Bitmap.Config conf = Bitmap.Config.ARGB_8888;
@@ -685,7 +735,7 @@ public class MapsActivity extends AppCompatActivity
                     }
                     marker_list.add(cnt+":"+(cnt3));
 
-                    Intent intent = new Intent(MapsActivity.this, ImageGridActivity.class);
+                    Intent intent = new Intent(MapsActivity2.this, ImageGridActivity.class);
                     //intent.putStringArrayListExtra("image_info",image_info);
                     //startActivity(intent);
                     mGoogleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
@@ -724,7 +774,16 @@ public class MapsActivity extends AppCompatActivity
                             return false;
                         }
                     });
+
+                    db_imageComment.clear();
+                    db_imageTime.clear();
+                    db_markerNum.clear();
+                    db_imageLat.clear();
+                    db_imageLng.clear();
+                    db_imageSource.clear();
+
                 }
+
 
 
 
@@ -756,28 +815,19 @@ public class MapsActivity extends AppCompatActivity
                     loop_date = select_date;
                     float[] out_latlong;
 
-                    images = getPathOfAllImages(loop_date);
 
 
-                    ArrayList<String> rev_arr =new ArrayList<>();
 
-                    images = getPathOfAllImages(loop_date);
-                    rev_arr.clear();
-                    for (int j=0;j<images.size();j++)
-                    {
-
-                        int size_of = images.size()-1;
-                        rev_arr.add(images.get(size_of-j));
-
-                    }
-                    for (String string : rev_arr) {
+                    int flagnum = 0;
+                    for (String string : db_imageSource) {
 
                         //String path_pho = images.get(0);
                         //Uri uri_pho = getUriFromPath(path_pho);
                         out_latlong = showExif(string);
                         if (out_latlong[0] != 0 && out_latlong[1] != 0) {
                             cnt3 = cnt3 +1;
-                            image_info.add(string + ":" + Float.toString(out_latlong[0]) + ":" + Float.toString(out_latlong[1]) + ":" + select_date+ ":" +" ");
+                            image_info.add(string + ":" + Float.toString(out_latlong[0]) + ":" + Float.toString(out_latlong[1]) + ":" + select_date + ":" +db_imageComment.get(flagnum));
+                            flagnum = flagnum+1;
                             //Toast.makeText(context, images.toString(), Toast.LENGTH_SHORT).show();
                             LatLng exifLatLng = new LatLng(out_latlong[0],out_latlong[1]);
                             Bitmap.Config conf = Bitmap.Config.ARGB_8888;
@@ -866,7 +916,7 @@ public class MapsActivity extends AppCompatActivity
                     marker_list.add(cnt+":"+(cnt3));
 
 
-                    Intent intent = new Intent(MapsActivity.this, ImageGridActivity.class);
+                    Intent intent = new Intent(MapsActivity2.this, ImageGridActivity.class);
                     mGoogleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                         @Override
                         public boolean onMarkerClick(Marker marker) {
@@ -903,6 +953,13 @@ public class MapsActivity extends AppCompatActivity
                             return false;
                         }
                     });
+
+                    db_imageComment.clear();
+                    db_imageTime.clear();
+                    db_markerNum.clear();
+                    db_imageLat.clear();
+                    db_imageLng.clear();
+                    db_imageSource.clear();
 
                 }
 
@@ -1109,7 +1166,7 @@ public class MapsActivity extends AppCompatActivity
     //여기부터는 GPS 활성화를 위한 메소드들
     private void showDialogForLocationServiceSetting() {
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(MapsActivity.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(MapsActivity2.this);
         builder.setTitle("위치 서비스 비활성화");
         builder.setMessage("앱을 사용하기 위해서는 위치 서비스가 필요합니다.\n"
                 + "위치 설정을 수정하실래요?");

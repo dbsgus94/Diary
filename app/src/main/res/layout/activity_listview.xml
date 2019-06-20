@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".ListviewActivity">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/textView"
+            android:gravity="center_horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/comic"
+            android:background="@color/colorAccent"
+            android:textColor="#fafafa"
+            android:textSize="35dp"
+            android:textStyle="bold"
+            android:text="Diary" />
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="10dp">
+
+        <Button
+            android:fontFamily="@font/comic"
+            android:background="@drawable/ic_add_box_black_24dp"
+            android:textColor="#fafafa"
+            android:id="@+id/btadd"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:textStyle="bold"
+            />
+        <Button
+            android:fontFamily="@font/comic"
+            android:background="@drawable/ic_check_black_24dp"
+            android:textColor="#fafafa"
+            android:id="@+id/btver"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:textStyle="bold"
+            />
+    </RelativeLayout>
+
+
+
+    <ListView
+        android:id="@+id/listv"
+        android:divider="@android:color/transparent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+    </ListView>
+</LinearLayout>

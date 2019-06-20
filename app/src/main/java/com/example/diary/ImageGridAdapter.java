@@ -20,16 +20,18 @@ public class ImageGridAdapter extends BaseAdapter {
     String [] imageIDs;
     String [] imageLat;
     String [] imageLng;
+    String [] imaComment;
     String image_date;
     String marker_title;
 
-    public ImageGridAdapter(Context context, String[] imageIDs,String[] imageLat ,String[] imageLng, String image_date, String marker_title) {
+    public ImageGridAdapter(Context context, String[] imageIDs,String[] imageLat ,String[] imageLng, String image_date, String marker_title, String[] imaComment) {
         this.context = context;
         this.imageIDs = imageIDs;
         this.imageLat = imageLat;
         this.imageLng = imageLng;
         this.image_date = image_date;
         this.marker_title = marker_title;
+        this.imaComment = imaComment;
 
     }
     public int getCount() {
@@ -83,7 +85,7 @@ public class ImageGridAdapter extends BaseAdapter {
 
             }
             imageView.setImageBitmap(bmp);
-            ImageClickListener imageViewClickListener = new ImageClickListener(context, imageIDs, position, image_date, imageLat, imageLng, marker_title);
+            ImageClickListener imageViewClickListener = new ImageClickListener(context, imageIDs, position, image_date, imageLat, imageLng, marker_title,imaComment);
             imageView.setOnClickListener(imageViewClickListener);
         }
         return imageView;

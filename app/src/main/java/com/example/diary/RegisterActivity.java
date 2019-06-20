@@ -75,7 +75,6 @@ public class RegisterActivity extends AppCompatActivity {
                                 validate = true;
                                 idText.setBackgroundColor(getResources().getColor(R.color.colorGray));
                                 validateButton.setBackgroundColor(getResources().getColor(R.color.colorGray));
-//여러하무러하무ㅏ름낭ㄻㄷㄻㄴㄹ
                                 //return;
                             }
                             else {

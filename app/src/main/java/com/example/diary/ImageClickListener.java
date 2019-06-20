@@ -13,9 +13,10 @@ public class ImageClickListener implements OnClickListener {
     String[] imageLng;
     String image_date;
     String marker_title;
+    String[] imaComment;
 
 
-    public  ImageClickListener(Context context, String[] imageIDs, int position, String image_date, String[] imageLat, String[] imageLng, String marker_title) {
+    public  ImageClickListener(Context context, String[] imageIDs, int position, String image_date, String[] imageLat, String[] imageLng, String marker_title, String[] imaComment) {
         this.context = context;
         this.imageIDs = imageIDs;
         this.position = position;
@@ -23,6 +24,7 @@ public class ImageClickListener implements OnClickListener {
         this.imageLat = imageLat;
         this.imageLng = imageLng;
         this.marker_title = marker_title;
+        this.imaComment = imaComment;
     }
     public void onClick(View v) {
         Intent intent= new Intent(context, ImageActivity.class);
@@ -32,6 +34,7 @@ public class ImageClickListener implements OnClickListener {
         intent.putExtra("position",position);
         intent.putExtra("image_date", image_date);
         intent.putExtra("marker_title", marker_title);
+        intent.putExtra("imaComment",imaComment);
         context.startActivity(intent);
     }
 }

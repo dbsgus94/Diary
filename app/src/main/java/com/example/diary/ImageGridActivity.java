@@ -28,6 +28,7 @@ public class ImageGridActivity extends AppCompatActivity {
     private static String imageDate = null;
     private static String[] imageLat = null;
     private static String[] imageLng = null;
+    private static String[] imaComment = null;
     private static String marker_title = null;
 
     String pathSave = "";
@@ -52,6 +53,7 @@ public class ImageGridActivity extends AppCompatActivity {
         imageIDs = new String[al_size];
         imageLat = new String[al_size];
         imageLng = new String[al_size];
+        imaComment = new String[al_size];
 
         for (int i = 0; i <= al_size - 1; i++) {
             String info_img = image_info.get(i);
@@ -60,12 +62,13 @@ public class ImageGridActivity extends AppCompatActivity {
             imageLat[i] = temp[1];
             imageLng[i] = temp[2];
             imageDate = temp[3];
+            imaComment[i] = temp[4];
         }
 
 
         setContentView(R.layout.activity_image_grid);
         GridView gridViewImages = (GridView) findViewById(R.id.gridViewImages);
-        ImageGridAdapter imageGridAdapter = new ImageGridAdapter(this, imageIDs,imageLat,imageLng, imageDate, marker_title);
+        ImageGridAdapter imageGridAdapter = new ImageGridAdapter(this, imageIDs,imageLat,imageLng, imageDate, marker_title, imaComment);
         gridViewImages.setAdapter(imageGridAdapter);
         btnPlay = (Button) findViewById(R.id.btnplay);
         btnRecord = (Button) findViewById(R.id.btnStartRecord);

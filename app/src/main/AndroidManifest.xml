@@ -26,12 +26,22 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
-        <activity android:name=".SelectDateActivity"></activity>
+        <activity android:name=".ListviewActivity"></activity>
+        <activity
+            android:label="여행일기"
+            android:name=".SplashActivity"
+            android:theme="@style/SplashTheme">
+
+        </activity>
+        <activity
+            android:name=".LoginActivity"
+            android:label="여행일기"></activity>
+        <activity android:name=".MapsActivity2" />
+        <activity android:name=".SelectDateActivity" />
         <activity android:name=".ImageGridActivity" />
         <activity
             android:name=".ImageActivity"
-            android:label="Selected Image"
-            />
+            android:label="Selected Image" />
 
         <uses-library
             android:name="org.apache.http.legacy"
@@ -53,24 +63,13 @@
             android:label="@string/title_activity_maps" />
         <activity android:name=".MeActivity" />
         <activity android:name=".RegisterActivity" />
-        <activity
-            android:name=".MainActivity"
-            >
-
-        </activity>
-        <activity android:name=".SplashActivity"
-            android:theme="@style/SplashTheme">
+        <activity android:name=".MainActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".LoginActivity"
-            android:label="여행일기">
-        </activity>
-
     </application>
-
 
 </manifest>

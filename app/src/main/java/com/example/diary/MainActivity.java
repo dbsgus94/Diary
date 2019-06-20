@@ -39,10 +39,25 @@ public class MainActivity extends AppCompatActivity {
         diaryButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent diaryButtonintent = new Intent(MainActivity.this, SelectDateActivity.class);
-                MainActivity.this.startActivity(diaryButtonintent);
+                Intent intent=getIntent();
+                //String userID = intent.getExtras().getString("id_value");
+                String userID = "ko";
+                Intent listviewintent = new Intent(MainActivity.this, ListviewActivity.class);
+                listviewintent.putExtra("id_value",userID);
+                MainActivity.this.startActivity(listviewintent);
             }
         });
+
+
+        friendButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent diaryButtonintent = new Intent(MainActivity.this, SelectDateActivity.class);
+                MainActivity.this.startActivity(diaryButtonintent);
+
+            }
+        });
+
 
     }
     private void checkPermission() {
